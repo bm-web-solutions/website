@@ -25,11 +25,18 @@ const process_steps = [
   },
 ]
 
-function FloatingShape({ className, delay = 0 }) {
+function FloatingShape({ className, delay = 0, opacity = 'opacity-15' }) {
   return (
     <div
-      className={`absolute rounded-full opacity-15 blur-3xl animate-pulse ${className}`}
-      style={{ animationDelay: `${delay}s`, animationDuration: '9s' }}
+      className={`absolute rounded-full ${opacity} blur-3xl ${className}`}
+      style={{
+        animationDelay: `${delay}s`,
+        animationDuration: '7s',
+        animationName: 'rosewoodFloat',
+        animationTimingFunction: 'ease-in-out',
+        animationIterationCount: 'infinite',
+        animationDirection: 'alternate',
+      }}
     />
   )
 }
@@ -49,92 +56,127 @@ export default function Design6() {
 
   return (
     <div
-      style={{ fontFamily: "'Instrument Sans', sans-serif" }}
-      className="min-h-screen text-[#1E2240] overflow-x-hidden"
+      style={{ fontFamily: "'Manrope', sans-serif" }}
+      className="min-h-screen text-[#2D1F24] overflow-x-hidden"
     >
-      {/* Cool silver-blue ethereal background */}
+      {/* Keyframes */}
+      <style>{`
+        @keyframes rosewoodFloat {
+          0% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(25px, -18px) scale(1.04); }
+          100% { transform: translate(-12px, 12px) scale(0.96); }
+        }
+      `}</style>
+
+      {/* Warm blush gradient background */}
       <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#F5F6FA] via-[#EEF0F8] to-[#E4E8F4]" />
-        <FloatingShape className="w-[450px] h-[400px] bg-[#97A6C9] top-[-8%] right-[5%]" delay={0} />
-        <FloatingShape className="w-[350px] h-[380px] bg-[#8190B5] bottom-[10%] left-[-8%]" delay={2} />
-        <FloatingShape className="w-[300px] h-[300px] bg-[#A0ACD0] top-[35%] right-[20%]" delay={4} />
-        <FloatingShape className="w-[250px] h-[280px] bg-[#6B7AA1] top-[55%] left-[10%]" delay={6} />
-        <FloatingShape className="w-[200px] h-[220px] bg-[#B0BAD8] top-[15%] left-[30%]" delay={1} />
-        <FloatingShape className="w-[280px] h-[250px] bg-[#8E9CC0] top-[70%] right-[35%]" delay={3.5} />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#FAF5F5] via-[#F5ECEC] to-[#EDE2E2]" />
+        <FloatingShape className="w-[550px] h-[550px] bg-[#D4A9B5] top-[-8%] right-[-3%]" delay={0} opacity="opacity-[0.16]" />
+        <FloatingShape className="w-[450px] h-[450px] bg-[#C48F9E] bottom-[8%] left-[-8%]" delay={1.4} opacity="opacity-[0.14]" />
+        <FloatingShape className="w-[600px] h-[600px] bg-[#B87A8A] top-[35%] left-[10%]" delay={3} opacity="opacity-[0.12]" />
+        <FloatingShape className="w-[300px] h-[300px] bg-[#9E5A6D] top-[15%] right-[20%]" delay={4.5} opacity="opacity-[0.15]" />
+        <FloatingShape className="w-[400px] h-[400px] bg-[#E0C4CC] bottom-[20%] right-[5%]" delay={5.5} opacity="opacity-20" />
+        {/* Mouse-tracked rose glow */}
         <div
-          className="absolute w-[600px] h-[600px] rounded-full opacity-[0.07] blur-[100px] bg-[#8190B5] transition-transform duration-[4000ms] ease-out"
+          className="absolute w-[800px] h-[800px] rounded-full opacity-[0.08] blur-[120px] bg-[#B87A8A] transition-transform duration-[3000ms] ease-out"
           style={{
-            transform: `translate(${mousePos.x * 60 - 30}px, ${mousePos.y * 60 - 30}px)`,
-            top: '30%',
-            left: '35%',
+            transform: `translate(${mousePos.x * 120 - 60}px, ${mousePos.y * 120 - 60}px)`,
+            top: '20%',
+            left: '25%',
           }}
         />
       </div>
 
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50">
+      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm bg-[#FAF5F5]/60">
         <div className="max-w-6xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
           <Link
             to="/"
-            className="text-xs tracking-[0.2em] uppercase text-[#1E2240]/35 hover:text-[#1E2240] transition-colors"
+            className="text-xs tracking-[0.2em] uppercase text-[#2D1F24]/40 hover:text-[#2D1F24] transition-colors"
           >
             &larr; Zurück
           </Link>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8190B5] to-[#6B7AA1] flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#9E5A6D] to-[#B87A8A] flex items-center justify-center text-white text-xs font-bold tracking-wide">
               BM
             </div>
           </div>
           <a
             href="mailto:hello@bm-web.de"
-            className="px-5 py-2 bg-[#1E2240] text-[#F5F6FA] rounded-full text-xs tracking-wider hover:scale-105 transition-transform"
+            className="px-5 py-2 bg-[#2D1F24] text-[#FAF5F5] rounded-full text-xs tracking-wider hover:bg-[#9E5A6D] transition-colors duration-300"
           >
             Let's talk
           </a>
         </div>
       </nav>
 
-      {/* Hero */}
+      {/* Hero - CENTERED with decorative circle ring and elegant thin lines */}
       <section className="min-h-screen flex items-center justify-center px-6 md:px-10 pt-20 relative">
-        <div className="max-w-4xl mx-auto text-center">
+        {/* Decorative circle ring behind heading */}
+        <div
+          className={`absolute w-[280px] h-[280px] md:w-[420px] md:h-[420px] rounded-full border border-[#D4A9B5]/40 transition-all duration-[2000ms] ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}
+          style={{ top: '50%', left: '50%', transform: `translate(-50%, -55%) ${visible ? 'scale(1)' : 'scale(0.75)'}` }}
+        />
+        <div
+          className={`absolute w-[350px] h-[350px] md:w-[520px] md:h-[520px] rounded-full border border-[#D4A9B5]/20 transition-all duration-[2500ms] delay-300 ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`}
+          style={{ top: '50%', left: '50%', transform: `translate(-50%, -55%) ${visible ? 'scale(1)' : 'scale(0.75)'}` }}
+        />
+
+        <div className="max-w-4xl mx-auto text-center relative z-10">
           <div
-            className={`inline-flex items-center gap-2 px-4 py-2 bg-[#1E2240]/[0.04] rounded-full text-xs tracking-wider uppercase mb-10 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+            className={`inline-flex items-center gap-2 px-5 py-2.5 bg-[#9E5A6D]/8 border border-[#9E5A6D]/10 rounded-full text-xs tracking-[0.2em] uppercase mb-12 transition-all duration-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
           >
-            <span className="w-2 h-2 rounded-full bg-[#6B7AA1] animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#9E5A6D] animate-pulse" />
             Buchwald & May — Web Studio
           </div>
 
-          <h1
-            style={{ fontFamily: "'Playfair Display', serif" }}
-            className={`text-[clamp(2.8rem,7vw,6.5rem)] leading-[1.05] mb-8 transition-all duration-1000 delay-200 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+          {/* Thin horizontal line above tagline */}
+          <div
+            className={`w-16 h-[1px] bg-[#9E5A6D]/30 mx-auto mb-6 transition-all duration-1000 delay-100 ${visible ? 'opacity-100 w-16' : 'opacity-0 w-0'}`}
+          />
+
+          <p
+            className={`text-xs tracking-[0.35em] uppercase text-[#9E5A6D] mb-6 transition-all duration-1000 delay-150 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
           >
-            Websites mit
+            Websites mit Eleganz & Anspruch
+          </p>
+
+          {/* Thin horizontal line below tagline */}
+          <div
+            className={`w-16 h-[1px] bg-[#9E5A6D]/30 mx-auto mb-10 transition-all duration-1000 delay-200 ${visible ? 'opacity-100 w-16' : 'opacity-0 w-0'}`}
+          />
+
+          <h1
+            style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
+            className={`text-[clamp(3rem,8vw,7.5rem)] leading-[1.05] mb-8 transition-all duration-1000 delay-300 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+          >
+            Wir gestalten
             <br />
-            <span className="bg-gradient-to-r from-[#6B7AA1] via-[#8190B5] to-[#A0ACD0] bg-clip-text text-transparent">
-              Leichtigkeit & Stil
+            <span className="bg-gradient-to-r from-[#9E5A6D] via-[#B87A8A] to-[#D4A9B5] bg-clip-text text-transparent">
+              digitale Eleganz
             </span>
           </h1>
 
           <p
-            className={`text-lg md:text-xl text-[#1E2240]/40 max-w-xl mx-auto leading-relaxed mb-12 transition-all duration-1000 delay-400 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            className={`text-lg md:text-xl text-[#2D1F24]/45 max-w-lg mx-auto leading-relaxed mb-14 transition-all duration-1000 delay-500 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
           >
             Wir gestalten Landing Pages, die nicht nur schön aussehen, sondern
             bei Google gefunden werden und Besucher zu Kunden machen.
           </p>
 
           <div
-            className={`flex flex-col sm:flex-row gap-4 justify-center transition-all duration-1000 delay-600 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+            className={`flex flex-col sm:flex-row gap-4 justify-center transition-all duration-1000 delay-700 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
           >
             <a
               href="mailto:hello@bm-web.de"
-              className="group inline-flex items-center justify-center gap-3 bg-[#1E2240] text-[#F5F6FA] px-8 py-4 rounded-2xl text-sm font-medium hover:shadow-2xl hover:shadow-[#6B7AA1]/20 hover:-translate-y-0.5 transition-all duration-300"
+              className="group inline-flex items-center justify-center gap-3 bg-[#2D1F24] text-[#FAF5F5] px-8 py-4 rounded-full text-sm font-medium hover:bg-[#9E5A6D] hover:shadow-2xl hover:shadow-[#9E5A6D]/20 hover:-translate-y-0.5 transition-all duration-300"
             >
               Projekt anfragen
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </a>
             <a
               href="#process"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-sm font-medium border border-[#1E2240]/8 text-[#1E2240]/45 hover:border-[#6B7AA1]/30 hover:text-[#6B7AA1] transition-all"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm font-medium border border-[#2D1F24]/10 text-[#2D1F24]/50 hover:border-[#9E5A6D]/40 hover:text-[#9E5A6D] transition-all duration-300"
             >
               Unser Prozess
             </a>
@@ -142,10 +184,10 @@ export default function Design6() {
         </div>
       </section>
 
-      {/* Trust Markers */}
-      <section className="py-16 px-6 md:px-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      {/* Trust Markers - 2x2 grid with rose left borders and large serif numbers */}
+      <section className="py-20 px-6 md:px-10">
+        <div className="max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {[
               { val: '50+', label: 'Projekte' },
               { val: '100%', label: 'Lighthouse' },
@@ -154,28 +196,32 @@ export default function Design6() {
             ].map((s, i) => (
               <div
                 key={i}
-                className="bg-white/40 backdrop-blur-sm border border-[#6B7AA1]/6 rounded-2xl p-6 text-center hover:bg-white/60 hover:shadow-lg hover:shadow-[#6B7AA1]/6 transition-all duration-500"
+                className="group bg-white/40 backdrop-blur-sm border border-[#2D1F24]/5 rounded-2xl p-7 flex items-center gap-5 hover:bg-white/65 hover:shadow-lg hover:shadow-[#9E5A6D]/5 transition-all duration-500"
               >
-                <div
-                  style={{ fontFamily: "'Playfair Display', serif" }}
-                  className="text-3xl md:text-4xl mb-1"
-                >
-                  {s.val}
+                {/* Rose left border accent */}
+                <div className="w-[3px] h-14 rounded-full bg-gradient-to-b from-[#9E5A6D] to-[#D4A9B5] opacity-60 group-hover:opacity-100 transition-opacity duration-500 shrink-0" />
+                <div>
+                  <div
+                    style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
+                    className="text-4xl md:text-5xl text-[#2D1F24] mb-0.5 leading-none"
+                  >
+                    {s.val}
+                  </div>
+                  <div className="text-[#2D1F24]/35 text-xs tracking-[0.2em] uppercase">{s.label}</div>
                 </div>
-                <div className="text-[#1E2240]/28 text-xs tracking-wider uppercase">{s.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Process */}
+      {/* Process - HORIZONTAL CARD CAROUSEL */}
       <section id="process" className="py-28 px-6 md:px-10">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <p className="text-xs tracking-[0.3em] uppercase text-[#6B7AA1] mb-4">Unser Prozess</p>
+            <p className="text-xs tracking-[0.35em] uppercase text-[#9E5A6D] mb-4">Unser Prozess</p>
             <h2
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
               className="text-4xl md:text-6xl"
             >
               Vom Gespräch
@@ -184,23 +230,28 @@ export default function Design6() {
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {process_steps.map((step, i) => (
               <div
                 key={i}
-                className="group bg-white/30 backdrop-blur-sm border border-[#6B7AA1]/6 rounded-3xl p-8 md:p-10 hover:bg-white/55 hover:shadow-xl hover:shadow-[#6B7AA1]/6 hover:-translate-y-1 transition-all duration-500"
+                className="group bg-white/40 backdrop-blur-sm border border-[#2D1F24]/5 rounded-2xl overflow-hidden hover:bg-white/70 hover:shadow-xl hover:shadow-[#9E5A6D]/5 hover:-translate-y-1 transition-all duration-500"
               >
-                <div className="flex items-start gap-5">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#8190B5]/15 to-[#6B7AA1]/8 flex items-center justify-center text-[#6B7AA1] shrink-0 group-hover:scale-110 transition-transform duration-500">
+                {/* Rose-tinted gradient top section with icon */}
+                <div className="bg-gradient-to-br from-[#F5ECEC] via-[#EDE2E2] to-[#E0C4CC]/40 p-7 flex flex-col items-center text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-white/60 border border-[#9E5A6D]/10 flex items-center justify-center text-[#9E5A6D] mb-4 group-hover:bg-[#9E5A6D] group-hover:text-white group-hover:border-[#9E5A6D] transition-all duration-500">
                     {step.icon}
                   </div>
-                  <div>
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="text-[#1E2240]/10 text-xs font-mono">0{i + 1}</span>
-                      <h3 className="text-xl font-semibold">{step.title}</h3>
-                    </div>
-                    <p className="text-[#1E2240]/38 leading-relaxed">{step.desc}</p>
-                  </div>
+                  <span
+                    style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
+                    className="text-5xl text-[#9E5A6D]/15 leading-none"
+                  >
+                    0{i + 1}
+                  </span>
+                </div>
+                {/* White bottom section with text */}
+                <div className="p-7 bg-white/30">
+                  <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
+                  <p className="text-[#2D1F24]/40 text-sm leading-relaxed">{step.desc}</p>
                 </div>
               </div>
             ))}
@@ -208,12 +259,12 @@ export default function Design6() {
         </div>
       </section>
 
-      {/* Tech */}
+      {/* Tech - Elegant pill/capsule shapes with thin borders */}
       <section className="py-24 px-6 md:px-10">
-        <div className="max-w-6xl mx-auto text-center">
-          <p className="text-xs tracking-[0.3em] uppercase text-[#6B7AA1] mb-4">Technologie</p>
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="text-xs tracking-[0.35em] uppercase text-[#9E5A6D] mb-4">Technologie</p>
           <h2
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
             className="text-4xl md:text-5xl mb-16"
           >
             Moderner Stack,
@@ -225,7 +276,7 @@ export default function Design6() {
               (tech) => (
                 <span
                   key={tech}
-                  className="px-5 py-2.5 bg-white/40 backdrop-blur-sm border border-[#6B7AA1]/6 rounded-full text-sm text-[#1E2240]/50 hover:bg-[#1E2240] hover:text-[#F5F6FA] transition-all duration-300 cursor-default"
+                  className="px-6 py-3 bg-transparent border border-[#9E5A6D]/20 rounded-full text-sm text-[#2D1F24]/55 hover:bg-[#9E5A6D] hover:text-white hover:border-[#9E5A6D] transition-all duration-300 cursor-default"
                 >
                   {tech}
                 </span>
@@ -235,19 +286,20 @@ export default function Design6() {
         </div>
       </section>
 
-      {/* Team */}
+      {/* Team - EDITORIAL/MAGAZINE style with full-width sections */}
       <section className="py-28 px-6 md:px-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-xs tracking-[0.3em] uppercase text-[#6B7AA1] mb-4">Das Team</p>
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-20">
+            <p className="text-xs tracking-[0.35em] uppercase text-[#9E5A6D] mb-4">Das Team</p>
             <h2
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
               className="text-4xl md:text-5xl"
             >
               Persönlich. Direkt. Engagiert.
             </h2>
           </div>
-          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+
+          <div className="flex flex-col">
             {[
               {
                 name: 'Marvin Buchwald',
@@ -260,43 +312,61 @@ export default function Design6() {
                 desc: 'Sorgt für die technische Exzellenz unter der Haube jeder Website.',
               },
             ].map((person, i) => (
-              <div
-                key={i}
-                className="bg-white/35 backdrop-blur-sm border border-[#6B7AA1]/6 rounded-3xl p-8 hover:bg-white/55 hover:shadow-xl transition-all duration-500"
-              >
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#8190B5] to-[#6B7AA1] flex items-center justify-center text-white text-lg font-bold mb-5">
-                  {person.name.split(' ').map(n => n[0]).join('')}
+              <div key={i}>
+                {/* Elegant thin separator line */}
+                <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4A9B5]/50 to-transparent" />
+
+                <div className="py-12 md:py-16 group">
+                  <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-4 md:gap-12">
+                    {/* Name in large serif */}
+                    <div className="md:flex-1">
+                      <h3
+                        style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
+                        className="text-4xl md:text-6xl text-[#2D1F24] group-hover:text-[#9E5A6D] transition-colors duration-500"
+                      >
+                        {person.name}
+                      </h3>
+                    </div>
+                    {/* Role and description */}
+                    <div className="md:flex-1 md:max-w-sm">
+                      <p className="text-[#9E5A6D] text-sm tracking-wider uppercase mb-3">{person.role}</p>
+                      <p className="text-[#2D1F24]/40 leading-relaxed">{person.desc}</p>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold mb-1">{person.name}</h3>
-                <p className="text-[#6B7AA1] text-sm mb-3">{person.role}</p>
-                <p className="text-[#1E2240]/30 text-sm leading-relaxed">{person.desc}</p>
+
+                {/* Bottom line for last item */}
+                {i === 1 && (
+                  <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#D4A9B5]/50 to-transparent" />
+                )}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-32 px-6 md:px-10">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="bg-gradient-to-br from-[#1E2240] to-[#2A3058] rounded-[2rem] p-12 md:p-20 text-[#F5F6FA] relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-60 h-60 bg-[#6B7AA1] rounded-full opacity-12 blur-[80px] -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-44 h-44 bg-[#97A6C9] rounded-full opacity-10 blur-[60px] translate-y-1/3 -translate-x-1/3" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-[#8190B5] rounded-full opacity-[0.06] blur-[100px]" />
+      {/* CTA - Elegant contained card with subtle rose gradient */}
+      <section className="py-28 px-6 md:px-10">
+        <div className="max-w-3xl mx-auto">
+          <div className="relative bg-gradient-to-br from-[#F5ECEC] via-[#EDE2E2] to-[#E0C4CC]/50 border border-[#D4A9B5]/30 rounded-3xl p-12 md:p-20 text-center overflow-hidden">
+            {/* Decorative glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#9E5A6D] rounded-full opacity-[0.06] blur-[80px] -translate-y-1/2 translate-x-1/3" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#B87A8A] rounded-full opacity-[0.06] blur-[60px] translate-y-1/3 -translate-x-1/4" />
+
             <h2
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 300 }}
               className="text-4xl md:text-6xl mb-6 relative"
             >
               Lassen Sie uns
               <br />
               etwas Großes bauen.
             </h2>
-            <p className="text-[#F5F6FA]/30 mb-10 max-w-md mx-auto relative">
+            <p className="text-[#2D1F24]/35 mb-10 max-w-md mx-auto relative">
               Kostenlose Erstberatung. Unverbindlich. Wir freuen uns auf Ihr Projekt.
             </p>
             <a
               href="mailto:hello@bm-web.de"
-              className="group inline-flex items-center gap-3 bg-gradient-to-r from-[#6B7AA1] to-[#8190B5] text-white px-8 py-4 rounded-2xl text-sm font-medium hover:shadow-2xl hover:shadow-[#6B7AA1]/30 hover:-translate-y-0.5 transition-all duration-300 relative"
+              className="group inline-flex items-center gap-3 bg-[#2D1F24] text-[#FAF5F5] px-8 py-4 rounded-full text-sm font-medium hover:bg-[#9E5A6D] hover:shadow-2xl hover:shadow-[#9E5A6D]/20 hover:-translate-y-0.5 transition-all duration-300 relative"
             >
               <Mail className="w-4 h-4" />
               hello@bm-web.de
@@ -307,8 +377,8 @@ export default function Design6() {
       </section>
 
       {/* Footer */}
-      <footer className="py-10 px-6 md:px-10 border-t border-[#1E2240]/5">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-[#1E2240]/20">
+      <footer className="py-10 px-6 md:px-10 border-t border-[#2D1F24]/5">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-[#2D1F24]/25">
           <span>&copy; 2026 Buchwald & May</span>
           <span>Mit Sorgfalt gebaut in Deutschland</span>
         </div>

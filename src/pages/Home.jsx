@@ -2,12 +2,12 @@ import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 
 const designs = [
-  { path: '/1', name: 'Organic', desc: 'Warm flowing gradients & curves' },
-  { path: '/2', name: 'Lagoon', desc: 'Cool oceanic blues & serene depth' },
-  { path: '/3', name: 'Dusk', desc: 'Twilight purples & rose accents' },
-  { path: '/4', name: 'Moss', desc: 'Earthy sage greens & natural calm' },
-  { path: '/5', name: 'Ember', desc: 'Dark warmth with amber glow' },
-  { path: '/6', name: 'Cloud', desc: 'Ethereal silver-blue & softness' },
+  { path: '/1', name: 'Organic', desc: 'Warme fließende Verläufe & sanfte Kurven' },
+  { path: '/2', name: 'Coastal', desc: 'Tiefes Teal & sandige Neutraltöne' },
+  { path: '/3', name: 'Midnight', desc: 'Dunkles Design mit Indigo-Glühen' },
+  { path: '/4', name: 'Terracotta', desc: 'Mediterrane Wärme & erdige Rottöne' },
+  { path: '/5', name: 'Arctic', desc: 'Eisiges Blau & Schweizer Minimalismus' },
+  { path: '/6', name: 'Rosewood', desc: 'Elegantes Rosenholz & Editorial-Luxus' },
 ]
 
 export default function Home() {
