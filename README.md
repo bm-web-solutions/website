@@ -1,16 +1,53 @@
-# React + Vite
+# Buchwald & May Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Produktions-Setup mit Next.js (App Router), Tailwind CSS, Bun und Lucide.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Next.js (App Router)
+- React 19
+- Tailwind CSS
+- Bun als Package Manager
+- Lucide Icons
 
-## React Compiler
+## Start
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+bun install
+bun run dev
+```
 
-## Expanding the ESLint configuration
+## Build
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+bun run lint
+bun run build
+bun run start
+```
+
+## Quality Gates
+
+- `bun run lint` mit Next Core Web Vitals Regeln
+- CI Workflow in `.github/workflows/ci.yml` (Lint + Build)
+- automatisierte Dependency-Updates via `.github/dependabot.yml`
+
+## Audit-Notiz
+
+- Aktuell sind 2 transitive Dev-Tooling Findings aus `bun audit` offen (`minimatch`, `ajv`) ueber die ESLint/Next-Lint-Chain.
+- `eslint@10` ist in diesem Setup derzeit nicht lauffaehig (`scopeManager.addGlobals` Fehler), daher ist `eslint@9.39.3` bewusst gepinnt.
+
+## SEO-Grundgeruest
+
+- zentrale Metadata in `app/layout.jsx`
+- strukturierte Daten (JSON-LD) in `app/page.jsx`
+- `app/robots.js`
+- `app/sitemap.js`
+
+## Environment
+
+Optional:
+
+- `SITE_URL` (z.B. `https://bm-webdev.de`)
+- `CONTACT_ENDPOINT` fuer das serverseitige Kontakt-Forwarding
+
+Vorlage: `.env.example`

@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 .bun
+.next
+.tmp
+.env*
+!.env.example
+coverage
 
 # Editor directories and files
 .vscode/*
