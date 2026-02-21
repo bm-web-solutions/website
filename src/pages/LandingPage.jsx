@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { ArrowRight, Sparkles, Zap, BarChart3, Palette, Mail, Send } from 'lucide-react'
 
+const CONTACT_ENDPOINT = import.meta.env.VITE_CONTACT_ENDPOINT || 'https://formsubmit.co/ajax/hello@bm-web.de'
+
 const process_steps = [
   {
     icon: <Sparkles className="w-6 h-6" />,
@@ -48,9 +50,12 @@ export default function LandingPage() {
   const [visible, setVisible] = useState(false)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [scrolled, setScrolled] = useState(false)
+  const [submitState, setSubmitState] = useState({ status: 'idle', message: '' })
 
   useEffect(() => {
-    setVisible(true)
+    const introAnim = window.requestAnimationFrame(() => {
+      setVisible(true)
+    })
     const handleMouse = (e) => {
       setMousePos({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight })
     }
@@ -58,20 +63,54 @@ export default function LandingPage() {
     window.addEventListener('mousemove', handleMouse)
     window.addEventListener('scroll', handleScroll)
     return () => {
+      window.cancelAnimationFrame(introAnim)
       window.removeEventListener('mousemove', handleMouse)
       window.removeEventListener('scroll', handleScroll)
     }
   }, [])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    const fd = new FormData(e.target)
-    const name = fd.get('name')
-    const email = fd.get('email')
-    const message = fd.get('message')
-    const subject = encodeURIComponent(`Projektanfrage von ${name}`)
-    const body = encodeURIComponent(`Name: ${name}\nE-Mail: ${email}\n\n${message}`)
-    window.location.href = `mailto:hello@bm-web.de?subject=${subject}&body=${body}`
+    const form = e.currentTarget
+    const fd = new FormData(form)
+
+    setSubmitState({ status: 'submitting', message: '' })
+
+    try {
+      const payload = {
+        name: fd.get('name'),
+        email: fd.get('email'),
+        company: fd.get('company'),
+        message: fd.get('message'),
+        _subject: `Neue Projektanfrage von ${fd.get('name')}`,
+        _template: 'table',
+        _captcha: 'false',
+      }
+
+      const response = await fetch(CONTACT_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        throw new Error('Request failed')
+      }
+
+      form.reset()
+      setSubmitState({
+        status: 'success',
+        message: 'Danke! Ihre Anfrage wurde versendet. Wir melden uns zeitnah zurück.',
+      })
+    } catch {
+      setSubmitState({
+        status: 'error',
+        message: 'Senden fehlgeschlagen. Bitte erneut versuchen oder direkt an hello@bm-web.de schreiben.',
+      })
+    }
   }
 
   return (
@@ -335,13 +374,13 @@ export default function LandingPage() {
                 name: 'Marvin Buchwald',
                 role: 'Entwickler & Design',
                 desc: 'Bringt ein Auge für Ästhetik und ein Gespür für Nutzerführung mit.',
-                img: '/img/marvin.jpg',
+                img: '/img/marvin.svg',
               },
               {
                 name: 'Vincent May',
                 role: 'Entwickler & Technik',
                 desc: 'Sorgt für die technische Exzellenz unter der Haube jeder Website.',
-                img: '/img/vincent.jpg',
+                img: '/img/vincent.svg',
               },
             ].map((person, i) => (
               <div
@@ -416,11 +455,13 @@ export default function LandingPage() {
               </div>
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                <input type="text" name="_honey" className="hidden" tabIndex={-1} autoComplete="off" />
                 <div>
-                  <label className="text-xs tracking-wider uppercase text-[#FFF8F0]/30 mb-2 block">
+                  <label htmlFor="name" className="text-xs tracking-wider uppercase text-[#FFF8F0]/30 mb-2 block">
                     Name
                   </label>
                   <input
+                    id="name"
                     type="text"
                     name="name"
                     required
@@ -429,10 +470,11 @@ export default function LandingPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs tracking-wider uppercase text-[#FFF8F0]/30 mb-2 block">
+                  <label htmlFor="email" className="text-xs tracking-wider uppercase text-[#FFF8F0]/30 mb-2 block">
                     E-Mail
                   </label>
                   <input
+                    id="email"
                     type="email"
                     name="email"
                     required
@@ -441,10 +483,23 @@ export default function LandingPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs tracking-wider uppercase text-[#FFF8F0]/30 mb-2 block">
+                  <label htmlFor="company" className="text-xs tracking-wider uppercase text-[#FFF8F0]/30 mb-2 block">
+                    Firma (optional)
+                  </label>
+                  <input
+                    id="company"
+                    type="text"
+                    name="company"
+                    placeholder="Unternehmen"
+                    className="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-5 py-4 text-[#FFF8F0] placeholder-[#FFF8F0]/20 focus:outline-none focus:border-[#C17E4F]/50 focus:bg-white/[0.07] transition-all duration-300"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="message" className="text-xs tracking-wider uppercase text-[#FFF8F0]/30 mb-2 block">
                     Nachricht
                   </label>
                   <textarea
+                    id="message"
                     name="message"
                     required
                     rows={4}
@@ -454,11 +509,21 @@ export default function LandingPage() {
                 </div>
                 <button
                   type="submit"
-                  className="group inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#C17E4F] to-[#D4956A] text-white px-8 py-4 rounded-xl text-sm font-medium hover:shadow-2xl hover:shadow-[#C17E4F]/30 hover:-translate-y-0.5 transition-all duration-300 mt-2"
+                  disabled={submitState.status === 'submitting'}
+                  className="group inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#C17E4F] to-[#D4956A] text-white px-8 py-4 rounded-xl text-sm font-medium hover:shadow-2xl hover:shadow-[#C17E4F]/30 hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 transition-all duration-300 mt-2"
                 >
-                  Nachricht senden
+                  {submitState.status === 'submitting' ? 'Wird gesendet...' : 'Nachricht senden'}
                   <Send className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </button>
+                {submitState.message && (
+                  <p
+                    className={`text-sm leading-relaxed ${
+                      submitState.status === 'error' ? 'text-[#F8B4B4]' : 'text-[#C7F0D8]'
+                    }`}
+                  >
+                    {submitState.message}
+                  </p>
+                )}
               </form>
             </div>
           </div>
