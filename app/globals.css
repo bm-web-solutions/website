@@ -1,17 +1,70 @@
 @import "tailwindcss";
 
+@theme {
+  --color-cream: #FFF8F0;
+  --color-cream-mid: #FEF0E4;
+  --color-cream-deep: #F5E6D3;
+
+  --color-ink: #2D2A26;
+  --color-ink-mid: #322F2B;
+  --color-ink-deep: #3D3A36;
+
+  --color-primary: #C17E4F;
+  --color-primary-light: #D4956A;
+  --color-primary-lighter: #E8A87C;
+
+  --animate-fade-up: fadeUp 0.75s ease-out both;
+  --animate-scroll-dot: scrollDot 1.6s ease-in-out infinite;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scrollDot {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
   }
 
   body {
-    background: #fff8f0;
-    color: #2d2a26;
+    background: var(--color-cream);
+    color: var(--color-ink);
     font-family: var(--font-sans), system-ui, sans-serif;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  :where(a, button, input, textarea, select):focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

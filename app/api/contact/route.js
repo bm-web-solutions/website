@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
+import { BRAND } from '../../../lib/config'
 
 const CONTACT_ENDPOINT =
   process.env.CONTACT_ENDPOINT ??
   process.env.NEXT_PUBLIC_CONTACT_ENDPOINT ??
-  'https://formsubmit.co/ajax/hello@bm-web.de'
+  `https://formsubmit.co/ajax/${BRAND.email}`
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000
 const RATE_LIMIT_MAX_REQUESTS = 5
 const requestsByIp = new Map()
@@ -116,7 +117,7 @@ export async function POST(request) {
     )
   } catch {
     return NextResponse.json(
-      { message: 'Senden fehlgeschlagen. Bitte erneut versuchen oder direkt an hello@bm-web.de schreiben.' },
+      { message: `Senden fehlgeschlagen. Bitte erneut versuchen oder direkt an ${BRAND.email} schreiben.` },
       { status: 502 },
     )
   }

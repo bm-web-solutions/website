@@ -39,7 +39,7 @@ export default function ContactForm() {
       form.reset()
       setSubmitState({
         status: 'success',
-        message: data.message || 'Danke! Ihre Anfrage wurde versendet. Wir melden uns zeitnah zurueck.',
+        message: data.message || 'Danke! Ihre Anfrage wurde versendet. Wir melden uns zeitnah zurück.',
       })
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Senden fehlgeschlagen.'
@@ -50,11 +50,14 @@ export default function ContactForm() {
     }
   }
 
+  const fieldClass =
+    'w-full bg-white/5 border border-white/8 rounded-xl px-5 py-4 text-cream placeholder-cream/38 focus:outline-none focus:border-primary/50 focus:bg-white/7 transition-all duration-300'
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      <input type="text" name="_honey" className="hidden" tabIndex={-1} autoComplete="off" />
+      <input type="text" name="_honey" className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
       <div>
-        <label htmlFor="name" className="text-xs tracking-wider uppercase text-[#FFF8F0]/30 mb-2 block">
+        <label htmlFor="name" className="text-xs tracking-wider uppercase text-cream/55 mb-2 block">
           Name
         </label>
         <input
@@ -63,12 +66,13 @@ export default function ContactForm() {
           name="name"
           required
           maxLength={120}
-          placeholder="Ihr Name"
-          className="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-5 py-4 text-[#FFF8F0] placeholder-[#FFF8F0]/20 focus:outline-none focus:border-[#C17E4F]/50 focus:bg-white/[0.07] transition-all duration-300"
+          autoComplete="name"
+          placeholder="z. B. Max Mustermann…"
+          className={fieldClass}
         />
       </div>
       <div>
-        <label htmlFor="email" className="text-xs tracking-wider uppercase text-[#FFF8F0]/30 mb-2 block">
+        <label htmlFor="email" className="text-xs tracking-wider uppercase text-cream/55 mb-2 block">
           E-Mail
         </label>
         <input
@@ -77,12 +81,14 @@ export default function ContactForm() {
           name="email"
           required
           maxLength={160}
-          placeholder="ihre@email.de"
-          className="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-5 py-4 text-[#FFF8F0] placeholder-[#FFF8F0]/20 focus:outline-none focus:border-[#C17E4F]/50 focus:bg-white/[0.07] transition-all duration-300"
+          autoComplete="email"
+          spellCheck="false"
+          placeholder="z. B. max@firma.de…"
+          className={fieldClass}
         />
       </div>
       <div>
-        <label htmlFor="company" className="text-xs tracking-wider uppercase text-[#FFF8F0]/30 mb-2 block">
+        <label htmlFor="company" className="text-xs tracking-wider uppercase text-cream/55 mb-2 block">
           Firma (optional)
         </label>
         <input
@@ -90,12 +96,13 @@ export default function ContactForm() {
           type="text"
           name="company"
           maxLength={120}
-          placeholder="Unternehmen"
-          className="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-5 py-4 text-[#FFF8F0] placeholder-[#FFF8F0]/20 focus:outline-none focus:border-[#C17E4F]/50 focus:bg-white/[0.07] transition-all duration-300"
+          autoComplete="organization"
+          placeholder="z. B. Muster GmbH…"
+          className={fieldClass}
         />
       </div>
       <div>
-        <label htmlFor="message" className="text-xs tracking-wider uppercase text-[#FFF8F0]/30 mb-2 block">
+        <label htmlFor="message" className="text-xs tracking-wider uppercase text-cream/55 mb-2 block">
           Nachricht
         </label>
         <textarea
@@ -104,14 +111,15 @@ export default function ContactForm() {
           required
           maxLength={3000}
           rows={4}
-          placeholder="Was bieten Sie an, fuer wen und was soll die Seite erreichen?"
-          className="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-5 py-4 text-[#FFF8F0] placeholder-[#FFF8F0]/20 focus:outline-none focus:border-[#C17E4F]/50 focus:bg-white/[0.07] transition-all duration-300 resize-none"
+          autoComplete="off"
+          placeholder="Was bieten Sie an, für wen und was soll die Seite erreichen…"
+          className={`${fieldClass} resize-none`}
         />
       </div>
       <button
         type="submit"
         disabled={submitState.status === 'submitting'}
-        className="group inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#C17E4F] to-[#D4956A] text-white px-8 py-4 rounded-xl text-sm font-medium hover:shadow-2xl hover:shadow-[#C17E4F]/30 hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 transition-all duration-300 mt-2"
+        className="group inline-flex items-center justify-center gap-3 bg-gradient-to-r from-primary to-primary-light text-white px-8 py-4 rounded-xl text-sm font-medium hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 transition-all duration-300 mt-2"
       >
         {submitState.status === 'submitting' ? 'Wird gesendet...' : 'Nachricht senden'}
         <Send className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
