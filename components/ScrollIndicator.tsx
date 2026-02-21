@@ -4,19 +4,23 @@ import { useEffect, useRef, useState } from 'react'
 
 export default function ScrollIndicator() {
   const [visible, setVisible] = useState(false)
-  const timerRef = useRef(null)
+  const timerRef = useRef<number | undefined>(undefined)
 
   useEffect(() => {
     const schedule = () => {
-      clearTimeout(timerRef.current)
+      if (timerRef.current !== undefined) {
+        clearTimeout(timerRef.current)
+      }
       setVisible(false)
-      timerRef.current = setTimeout(() => setVisible(true), 3000)
+      timerRef.current = window.setTimeout(() => setVisible(true), 3000)
     }
 
     const onScroll = () => {
       if (window.scrollY > 80) {
         setVisible(false)
-        clearTimeout(timerRef.current)
+        if (timerRef.current !== undefined) {
+          clearTimeout(timerRef.current)
+        }
       } else if (window.scrollY < 20) {
         schedule()
       }
@@ -25,7 +29,9 @@ export default function ScrollIndicator() {
     schedule()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => {
-      clearTimeout(timerRef.current)
+      if (timerRef.current !== undefined) {
+        clearTimeout(timerRef.current)
+      }
       window.removeEventListener('scroll', onScroll)
     }
   }, [])

@@ -1,4 +1,28 @@
-export const BRAND = {
+type BrandSocial = {
+  linkedin?: string
+  github?: string
+}
+
+export type Brand = {
+  name: string
+  shortName: string
+  email: string
+  domain: string
+  locations: string[]
+  foundingYear: number
+  social?: BrandSocial
+}
+
+export type TeamMember = {
+  name: string
+  role: string
+  desc: string
+  location: string
+  linkedin?: string
+  github?: string
+}
+
+export const BRAND: Brand = {
   name: 'May & Buchwald Web Solutions',
   shortName: 'MB',
   email: 'contact@mbws.dev',
@@ -12,7 +36,7 @@ export const BRAND = {
   },
 }
 
-export const TEAM = [
+export const TEAM: TeamMember[] = [
   {
     name: 'Vincent May',
     role: 'Junior Developer',

@@ -3,6 +3,13 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
+const NAV_LINKS = [
+  { label: 'Prozess', id: 'prozess' },
+  { label: 'Ansatz', id: 'ansatz' },
+  { label: 'Team', id: 'team' },
+  { label: 'Kontakt', id: 'kontakt' },
+] as const
+
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
 
@@ -33,12 +40,7 @@ export default function Header() {
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
-          {[
-            { label: 'Prozess', id: 'prozess' },
-            { label: 'Ansatz', id: 'ansatz' },
-            { label: 'Team', id: 'team' },
-            { label: 'Kontakt', id: 'kontakt' },
-          ].map((link) => (
+          {NAV_LINKS.map((link) => (
             <a
               key={link.id}
               href={`#${link.id}`}

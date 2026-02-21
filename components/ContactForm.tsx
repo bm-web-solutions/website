@@ -1,12 +1,26 @@
 'use client'
 
 import { Send } from 'lucide-react'
-import { useState } from 'react'
+import { type FormEvent, useState } from 'react'
+
+type SubmitState = {
+  status: 'idle' | 'submitting' | 'success' | 'error'
+  message: string
+}
+
+type ContactApiResponse = {
+  message?: string
+}
+
+function getStringFormValue(formData: FormData, key: string): string {
+  const value = formData.get(key)
+  return typeof value === 'string' ? value : ''
+}
 
 export default function ContactForm() {
-  const [submitState, setSubmitState] = useState({ status: 'idle', message: '' })
+  const [submitState, setSubmitState] = useState<SubmitState>({ status: 'idle', message: '' })
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const form = event.currentTarget
     const formData = new FormData(form)
@@ -15,11 +29,11 @@ export default function ContactForm() {
 
     try {
       const payload = {
-        name: formData.get('name'),
-        email: formData.get('email'),
-        company: formData.get('company'),
-        message: formData.get('message'),
-        _honey: formData.get('_honey'),
+        name: getStringFormValue(formData, 'name'),
+        email: getStringFormValue(formData, 'email'),
+        company: getStringFormValue(formData, 'company'),
+        message: getStringFormValue(formData, 'message'),
+        _honey: getStringFormValue(formData, '_honey'),
       }
 
       const response = await fetch('/api/contact', {
@@ -30,7 +44,7 @@ export default function ContactForm() {
         body: JSON.stringify(payload),
       })
 
-      const data = await response.json()
+      const data = (await response.json().catch(() => ({}))) as ContactApiResponse
 
       if (!response.ok) {
         throw new Error(data.message || 'Senden fehlgeschlagen.')

@@ -1,7 +1,8 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { BRAND } from '../../lib/config'
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Impressum',
   description: `Impressum von ${BRAND.name}`,
 }

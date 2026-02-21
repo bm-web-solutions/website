@@ -4,7 +4,12 @@ import { useState } from 'react'
 import { Minus, Plus } from 'lucide-react'
 import { BRAND } from '../lib/config'
 
-const faqs = [
+type FaqEntry = {
+  q: string
+  a: string
+}
+
+const faqs: FaqEntry[] = [
   {
     q: `Was kostet eine Landingpage bei ${BRAND.name}?`,
     a: 'Unser Preis hängt vom Umfang ab: Anzahl der Bereiche, benötigte Funktionalität und Zeitrahmen spielen eine Rolle. Im Erstgespräch klären wir, was Ihr Projekt braucht, und nennen Ihnen ein konkretes Angebot – transparent und ohne Überraschungen.',
@@ -32,7 +37,7 @@ const faqs = [
 ]
 
 export default function FAQSection() {
-  const [openIndex, setOpenIndex] = useState(null)
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   return (
     <section id="faq" className="py-28 px-6 md:px-10 scroll-mt-24">

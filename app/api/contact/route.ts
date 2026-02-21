@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { BRAND } from '../../../lib/config'
 import { SITE_URL } from '../../../lib/site'
 
@@ -6,7 +7,13 @@ export const runtime = 'nodejs'
 
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000
 const RATE_LIMIT_MAX_REQUESTS = 5
-const localRequestsByIp = new Map()
+
+type RateLimitEntry = {
+  count: number
+  windowStart: number
+}
+
+const localRequestsByIp = new Map<string, RateLimitEntry>()
 const RATE_LIMIT_REST_URL = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL
 const RATE_LIMIT_REST_TOKEN = process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN
 const HAS_DISTRIBUTED_RATE_LIMIT = Boolean(RATE_LIMIT_REST_URL && RATE_LIMIT_REST_TOKEN)
@@ -19,7 +26,24 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const FORM_URL = `${SITE_URL}/#kontakt`
 let hasLoggedRateLimitFallback = false
 
-function normalizeText(value, maxLength) {
+type ContactRequestBody = {
+  name?: unknown
+  email?: unknown
+  company?: unknown
+  message?: unknown
+  _honey?: unknown
+}
+
+type MailPayload = {
+  subject: string
+  replyTo: string
+  text: string
+  html: string
+}
+
+type PipelineCommand = [string, ...Array<string | number>]
+
+function normalizeText(value: unknown, maxLength: number): string {
   if (typeof value !== 'string') {
     return ''
   }
@@ -27,7 +51,7 @@ function normalizeText(value, maxLength) {
   return value.trim().replace(/\s+/g, ' ').slice(0, maxLength)
 }
 
-function escapeHtml(value) {
+function escapeHtml(value: string): string {
   return value
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
@@ -36,7 +60,7 @@ function escapeHtml(value) {
     .replaceAll("'", '&#39;')
 }
 
-function getClientIp(request) {
+function getClientIp(request: NextRequest): string {
   const forwardedFor = request.headers.get('x-forwarded-for')
   if (forwardedFor) {
     return forwardedFor.split(',')[0].trim()
@@ -45,7 +69,7 @@ function getClientIp(request) {
   return request.headers.get('x-real-ip') ?? 'unknown'
 }
 
-function isRateLimitedLocal(ip) {
+function isRateLimitedLocal(ip: string): boolean {
   const now = Date.now()
 
   for (const [key, value] of localRequestsByIp.entries()) {
@@ -73,7 +97,11 @@ function isRateLimitedLocal(ip) {
   return false
 }
 
-async function runRateLimitPipeline(commands) {
+async function runRateLimitPipeline(commands: PipelineCommand[]): Promise<unknown[]> {
+  if (!RATE_LIMIT_REST_URL || !RATE_LIMIT_REST_TOKEN) {
+    throw new Error('Rate limit store is not configured.')
+  }
+
   const response = await fetch(`${RATE_LIMIT_REST_URL}/pipeline`, {
     method: 'POST',
     headers: {
@@ -88,16 +116,28 @@ async function runRateLimitPipeline(commands) {
     throw new Error(`Rate limit store request failed with status ${response.status}`)
   }
 
-  const data = await response.json()
-  const results = Array.isArray(data?.result) ? data.result : Array.isArray(data) ? data : null
+  const data = (await response.json()) as unknown
+  const results =
+    typeof data === 'object' && data !== null && 'result' in data
+      ? (data as { result?: unknown }).result
+      : data
+
   if (!results) {
     throw new Error('Rate limit store returned an unexpected response shape.')
   }
 
-  return results.map((item) => item?.result)
+  if (!Array.isArray(results)) {
+    throw new Error('Rate limit store returned an unexpected response shape.')
+  }
+
+  return results.map((item) =>
+    typeof item === 'object' && item !== null && 'result' in item
+      ? (item as { result?: unknown }).result
+      : undefined,
+  )
 }
 
-async function isRateLimitedDistributed(ip) {
+async function isRateLimitedDistributed(ip: string): Promise<boolean> {
   const key = `rate_limit:contact:${ip}`
   const windowSeconds = Math.ceil(RATE_LIMIT_WINDOW_MS / 1000)
 
@@ -109,7 +149,7 @@ async function isRateLimitedDistributed(ip) {
   return Number(count) > RATE_LIMIT_MAX_REQUESTS
 }
 
-async function isRateLimited(ip) {
+async function isRateLimited(ip: string): Promise<boolean> {
   if (!HAS_DISTRIBUTED_RATE_LIMIT) {
     if (process.env.VERCEL_ENV === 'production' && !hasLoggedRateLimitFallback) {
       console.warn(
@@ -128,7 +168,17 @@ async function isRateLimited(ip) {
   }
 }
 
-function buildMailPayload({ name, email, company, message }) {
+function buildMailPayload({
+  name,
+  email,
+  company,
+  message,
+}: {
+  name: string
+  email: string
+  company: string
+  message: string
+}): MailPayload {
   const normalizedCompany = company || 'Nicht angegeben'
   const escapedName = escapeHtml(name)
   const escapedEmail = escapeHtml(email)
@@ -164,7 +214,7 @@ function buildMailPayload({ name, email, company, message }) {
   }
 }
 
-async function sendContactMail(mailPayload) {
+async function sendContactMail(mailPayload: MailPayload): Promise<boolean> {
   const response = await fetch(RESEND_API_URL, {
     method: 'POST',
     headers: {
@@ -201,20 +251,23 @@ async function sendContactMail(mailPayload) {
   return true
 }
 
-export async function POST(request) {
+export async function POST(request: NextRequest): Promise<Response> {
   if (!HAS_CONTACT_MAIL_CONFIG) {
     console.error('Missing contact mail configuration:', {
       hasResendApiKey: Boolean(RESEND_API_KEY),
       hasContactToEmail: Boolean(CONTACT_TO_EMAIL),
       hasContactFromEmail: Boolean(CONTACT_FROM_EMAIL),
     })
-    return NextResponse.json({ message: 'Kontaktformular ist serverseitig nicht vollstaendig konfiguriert.' }, { status: 500 })
+    return NextResponse.json(
+      { message: 'Kontaktformular ist serverseitig nicht vollstaendig konfiguriert.' },
+      { status: 500 },
+    )
   }
 
-  let body
+  let body: ContactRequestBody
 
   try {
-    body = await request.json()
+    body = (await request.json()) as ContactRequestBody
   } catch {
     return NextResponse.json({ message: 'Ungueltige Anfrage.' }, { status: 400 })
   }

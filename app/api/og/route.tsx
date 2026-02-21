@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 import { BRAND } from '../../../lib/config'
 
-export async function GET() {
+export function GET(): ImageResponse {
   return new ImageResponse(
     (
       <div

@@ -1,10 +1,12 @@
 import './globals.css'
+import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
 import { BRAND } from '../lib/config'
 import { SITE_URL } from '../lib/site'
 
 const isPreview = process.env.VERCEL_ENV === 'preview'
 
-export const metadata = {
+export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: `${BRAND.name} | Landingpages & Webentwicklung`,
@@ -60,7 +62,11 @@ export const metadata = {
   },
 }
 
-export default function RootLayout({ children }) {
+type RootLayoutProps = {
+  children: ReactNode
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="de">
       <body className="antialiased">

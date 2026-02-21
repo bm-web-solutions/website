@@ -1,7 +1,8 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { BRAND } from '../../lib/config'
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Datenschutz',
   description: `Datenschutzerklärung von ${BRAND.name}`,
 }
@@ -17,7 +18,12 @@ export default function DatenschutzPage() {
           <section>
             <h2 className="text-xl font-semibold text-ink mb-2">1. Verantwortliche Stelle</h2>
             <p>{BRAND.name}</p>
-            <p>E-Mail: <a className="text-primary hover:underline" href={`mailto:${BRAND.email}`}>{BRAND.email}</a></p>
+            <p>
+              E-Mail:{' '}
+              <a className="text-primary hover:underline" href={`mailto:${BRAND.email}`}>
+                {BRAND.email}
+              </a>
+            </p>
           </section>
 
           <section>
