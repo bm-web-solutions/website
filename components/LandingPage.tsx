@@ -77,9 +77,9 @@ export default function LandingPage() {
       {/* Background — decorative blob colors are intentionally subtle variations, kept inline */}
       <div className="fixed inset-0 -z-10" aria-hidden="true">
         <div className="absolute inset-0 bg-gradient-to-br from-cream via-cream-mid to-cream-deep" />
-        <div className="absolute rounded-full opacity-[0.18] blur-3xl w-[650px] h-[650px] bg-[#E8B88A] top-[-12%] right-[-6%]" />
-        <div className="absolute rounded-full opacity-[0.15] blur-3xl w-[520px] h-[520px] bg-[#D4A574] bottom-[8%] left-[-12%]" />
-        <div className="absolute rounded-full opacity-[0.12] blur-3xl w-[420px] h-[420px] bg-[#C4956A] top-[42%] right-[18%]" />
+        <div className="absolute rounded-full opacity-[0.18] dark:opacity-[0.22] blur-3xl w-[650px] h-[650px] bg-[#E8B88A] dark:bg-[#7A4F2E] top-[-12%] right-[-6%]" />
+        <div className="absolute rounded-full opacity-[0.15] dark:opacity-[0.2] blur-3xl w-[520px] h-[520px] bg-[#D4A574] dark:bg-[#5E3F26] bottom-[8%] left-[-12%]" />
+        <div className="absolute rounded-full opacity-[0.12] dark:opacity-[0.18] blur-3xl w-[420px] h-[420px] bg-[#C4956A] dark:bg-[#463124] top-[42%] right-[18%]" />
       </div>
 
       <Header />
@@ -120,7 +120,7 @@ export default function LandingPage() {
           >
             <a
               href="#kontakt"
-              className="group inline-flex items-center justify-center gap-3 bg-ink text-cream px-8 py-4 rounded-2xl text-sm font-medium hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-0.5 transition-[translate,box-shadow] duration-300"
+              className="group inline-flex items-center justify-center gap-3 bg-night text-night-text px-8 py-4 rounded-2xl text-sm font-medium hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-0.5 transition-[translate,box-shadow] duration-300"
             >
               Projekt anfragen
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
@@ -155,7 +155,7 @@ export default function LandingPage() {
               return (
                 <div
                   key={item.headline}
-                  className="group bg-white/50 backdrop-blur-sm border border-ink/8 rounded-2xl p-7 md:p-8 hover:bg-white/75 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-[background-color,box-shadow,translate] duration-500"
+                  className="group bg-white/50 dark:bg-white/4 backdrop-blur-sm border border-ink/8 rounded-2xl p-7 md:p-8 hover:bg-white/75 dark:hover:bg-white/8 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-[background-color,box-shadow,translate] duration-500"
                 >
                   <Icon
                     className="w-6 h-6 text-primary mb-5 group-hover:scale-110 transition-transform duration-300"
@@ -238,7 +238,7 @@ export default function LandingPage() {
             {approachCards.map((card, index) => (
               <article
                 key={card.title}
-                className="group relative bg-white/40 backdrop-blur-sm border border-ink/8 rounded-2xl p-7 md:p-8 hover:bg-white/65 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-0.5 transition-[background-color,box-shadow,translate] duration-500 overflow-hidden"
+                className="group relative bg-white/40 dark:bg-white/4 backdrop-blur-sm border border-ink/8 rounded-2xl p-7 md:p-8 hover:bg-white/65 dark:hover:bg-white/8 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-0.5 transition-[background-color,box-shadow,translate] duration-500 overflow-hidden"
               >
                 <span
                   aria-hidden="true"
@@ -273,7 +273,7 @@ export default function LandingPage() {
               return (
                 <div
                   key={person.name}
-                  className="group bg-white/40 backdrop-blur-sm border border-ink/8 rounded-3xl p-8 hover:bg-white/60 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1 transition-[background-color,box-shadow,translate] duration-500"
+                  className="group bg-white/40 dark:bg-white/4 backdrop-blur-sm border border-ink/8 rounded-3xl p-8 hover:bg-white/60 dark:hover:bg-white/8 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1 transition-[background-color,box-shadow,translate] duration-500"
                 >
                   <div className="flex items-start justify-between mb-7">
                     <div
@@ -326,7 +326,7 @@ export default function LandingPage() {
       <section id="kontakt" className="md:min-h-screen flex flex-col px-4 md:px-10 scroll-mt-24">
         <div className="flex-1 flex items-center py-10 md:pt-[8.5rem] md:pb-16">
           <div className="max-w-6xl mx-auto w-full">
-            <div className="bg-gradient-to-br from-ink via-ink-mid to-ink-deep rounded-[2rem] p-6 sm:p-10 md:p-16 lg:p-20 text-cream relative overflow-hidden">
+            <div className="bg-gradient-to-br from-night via-night-mid to-night-deep rounded-[2rem] p-6 sm:p-10 md:p-16 lg:p-20 text-night-text relative overflow-hidden">
               <div aria-hidden="true" className="absolute top-0 right-0 w-96 h-96 bg-primary rounded-full opacity-[0.09] blur-[100px] -translate-y-1/3 translate-x-1/4" />
               <div aria-hidden="true" className="absolute bottom-0 left-0 w-72 h-72 bg-primary-light rounded-full opacity-[0.05] blur-[80px] translate-y-1/3 -translate-x-1/4" />
 
@@ -340,11 +340,11 @@ export default function LandingPage() {
                     <br />
                     Projekt.
                   </h2>
-                  <p className="text-cream/65 leading-relaxed mb-8 max-w-sm">
+                  <p className="text-night-text/65 leading-relaxed mb-8 max-w-sm">
                     Was bieten Sie an, für wen ist es – und was soll die Seite konkret auslösen?
                     Das reicht für den Start.
                   </p>
-                  <address className="not-italic flex items-center gap-3 text-cream/50 text-sm">
+                  <address className="not-italic flex items-center gap-3 text-night-text/50 text-sm">
                     <Mail className="w-4 h-4 shrink-0" aria-hidden="true" />
                     <a href={`mailto:${BRAND.email}`} className="hover:text-primary transition-colors">
                       {BRAND.email}

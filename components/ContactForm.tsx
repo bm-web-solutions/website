@@ -65,13 +65,13 @@ export default function ContactForm() {
   }
 
   const fieldClass =
-    'w-full bg-white/5 border border-white/8 rounded-xl px-5 py-4 text-cream placeholder-cream/38 focus:outline-none focus:border-primary/50 focus:bg-white/7 transition-colors duration-300'
+    'w-full bg-white/5 border border-white/8 rounded-xl px-5 py-4 text-night-text placeholder-night-text/38 focus:outline-none focus:border-primary/50 focus:bg-white/7 transition-colors duration-300'
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <input type="text" name="_honey" className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
       <div>
-        <label htmlFor="name" className="text-xs tracking-wider uppercase text-cream/55 mb-2 block">
+        <label htmlFor="name" className="text-xs tracking-wider uppercase text-night-text/55 mb-2 block">
           Name
         </label>
         <input
@@ -86,7 +86,7 @@ export default function ContactForm() {
         />
       </div>
       <div>
-        <label htmlFor="email" className="text-xs tracking-wider uppercase text-cream/55 mb-2 block">
+        <label htmlFor="email" className="text-xs tracking-wider uppercase text-night-text/55 mb-2 block">
           E-Mail
         </label>
         <input
@@ -102,7 +102,7 @@ export default function ContactForm() {
         />
       </div>
       <div>
-        <label htmlFor="company" className="text-xs tracking-wider uppercase text-cream/55 mb-2 block">
+        <label htmlFor="company" className="text-xs tracking-wider uppercase text-night-text/55 mb-2 block">
           Firma (optional)
         </label>
         <input
@@ -116,7 +116,7 @@ export default function ContactForm() {
         />
       </div>
       <div>
-        <label htmlFor="message" className="text-xs tracking-wider uppercase text-cream/55 mb-2 block">
+        <label htmlFor="message" className="text-xs tracking-wider uppercase text-night-text/55 mb-2 block">
           Nachricht
         </label>
         <textarea

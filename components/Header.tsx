@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import ThemeToggle from './ThemeToggle'
 
 const NAV_LINKS = [
   { label: 'Prozess', id: 'prozess' },
@@ -24,7 +25,9 @@ export default function Header() {
     <nav
       aria-label="Hauptnavigation"
       className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-500 ${
-        scrolled ? 'backdrop-blur-md bg-cream/92 shadow-[0_1px_0_0_rgba(45,42,38,0.1)]' : ''
+        scrolled
+          ? 'backdrop-blur-md bg-cream/92 shadow-[0_1px_0_0_rgba(45,42,38,0.1)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.09)]'
+          : ''
       }`}
     >
       <div className="max-w-6xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
@@ -51,12 +54,15 @@ export default function Header() {
           ))}
         </div>
 
-        <a
-          href="#kontakt"
-          className="px-5 py-2 bg-ink text-cream rounded-full text-xs tracking-wider hover:bg-primary transition-colors duration-300"
-        >
-          Projekt starten
-        </a>
+        <div className="flex items-center gap-4">
+          <a
+            href="#kontakt"
+            className="md:hidden text-xs tracking-[0.15em] uppercase text-ink/55 hover:text-primary transition-colors"
+          >
+            Kontakt
+          </a>
+          <ThemeToggle />
+        </div>
       </div>
     </nav>
   )
