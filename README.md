@@ -47,7 +47,8 @@ bun run start
 
 Optional:
 
-- `SITE_URL` (z.B. `https://bm-webdev.de`)
+- `SITE_URL` (z.B. `https://mbws.vercel.app`, später `https://mbws.dev`)
 - `CONTACT_ENDPOINT` fuer das serverseitige Kontakt-Forwarding
+- `KV_REST_API_URL` und `KV_REST_API_TOKEN` fuer verteiltes Rate-Limiting des Kontaktformulars
 
 Vorlage: `.env.example`

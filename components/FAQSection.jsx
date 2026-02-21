@@ -63,7 +63,7 @@ export default function FAQSection() {
                   <span className="text-base font-semibold leading-snug group-hover:text-primary transition-colors duration-200">
                     {faq.q}
                   </span>
-                  <span className="shrink-0 w-7 h-7 rounded-full border border-ink/15 flex items-center justify-center text-ink/50 mt-0.5 group-hover:border-primary/50 group-hover:text-primary transition-all duration-200">
+                  <span className="shrink-0 w-7 h-7 rounded-full border border-ink/15 flex items-center justify-center text-ink/50 mt-0.5 group-hover:border-primary/50 group-hover:text-primary transition-colors duration-200">
                     {openIndex === index ? (
                       <Minus className="w-3.5 h-3.5" aria-hidden="true" />
                     ) : (

@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server'
 import { BRAND } from '../../../lib/config'
 
-const CONTACT_ENDPOINT =
-  process.env.CONTACT_ENDPOINT ??
-  process.env.NEXT_PUBLIC_CONTACT_ENDPOINT ??
-  `https://formsubmit.co/ajax/${BRAND.email}`
+const CONTACT_ENDPOINT = process.env.CONTACT_ENDPOINT ?? `https://formsubmit.co/ajax/${BRAND.email}`
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000
 const RATE_LIMIT_MAX_REQUESTS = 5
-const requestsByIp = new Map()
+const localRequestsByIp = new Map()
+const RATE_LIMIT_REST_URL = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL
+const RATE_LIMIT_REST_TOKEN = process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN
+const HAS_DISTRIBUTED_RATE_LIMIT = Boolean(RATE_LIMIT_REST_URL && RATE_LIMIT_REST_TOKEN)
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+let hasLoggedRateLimitFallback = false
 
 function normalizeText(value, maxLength) {
   if (typeof value !== 'string') {
@@ -27,23 +28,23 @@ function getClientIp(request) {
   return request.headers.get('x-real-ip') ?? 'unknown'
 }
 
-function isRateLimited(ip) {
+function isRateLimitedLocal(ip) {
   const now = Date.now()
 
-  for (const [key, value] of requestsByIp.entries()) {
+  for (const [key, value] of localRequestsByIp.entries()) {
     if (now - value.windowStart > RATE_LIMIT_WINDOW_MS) {
-      requestsByIp.delete(key)
+      localRequestsByIp.delete(key)
     }
   }
 
-  const entry = requestsByIp.get(ip)
+  const entry = localRequestsByIp.get(ip)
   if (!entry) {
-    requestsByIp.set(ip, { count: 1, windowStart: now })
+    localRequestsByIp.set(ip, { count: 1, windowStart: now })
     return false
   }
 
   if (now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
-    requestsByIp.set(ip, { count: 1, windowStart: now })
+    localRequestsByIp.set(ip, { count: 1, windowStart: now })
     return false
   }
 
@@ -53,6 +54,61 @@ function isRateLimited(ip) {
 
   entry.count += 1
   return false
+}
+
+async function runRateLimitPipeline(commands) {
+  const response = await fetch(`${RATE_LIMIT_REST_URL}/pipeline`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${RATE_LIMIT_REST_TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(commands),
+    cache: 'no-store',
+  })
+
+  if (!response.ok) {
+    throw new Error(`Rate limit store request failed with status ${response.status}`)
+  }
+
+  const data = await response.json()
+  const results = data?.result
+  if (!Array.isArray(results)) {
+    throw new Error('Rate limit store returned an unexpected response shape.')
+  }
+
+  return results.map((item) => item?.result)
+}
+
+async function isRateLimitedDistributed(ip) {
+  const key = `rate_limit:contact:${ip}`
+  const windowSeconds = Math.ceil(RATE_LIMIT_WINDOW_MS / 1000)
+
+  const [count] = await runRateLimitPipeline([
+    ['INCR', key],
+    ['EXPIRE', key, windowSeconds, 'NX'],
+  ])
+
+  return Number(count) > RATE_LIMIT_MAX_REQUESTS
+}
+
+async function isRateLimited(ip) {
+  if (!HAS_DISTRIBUTED_RATE_LIMIT) {
+    if (process.env.VERCEL_ENV === 'production' && !hasLoggedRateLimitFallback) {
+      console.warn(
+        'Distributed rate limiting is not configured. Falling back to local in-memory mode for /api/contact.',
+      )
+      hasLoggedRateLimitFallback = true
+    }
+    return isRateLimitedLocal(ip)
+  }
+
+  try {
+    return await isRateLimitedDistributed(ip)
+  } catch (error) {
+    console.error('Distributed rate limiting failed. Falling back to local mode.', error)
+    return isRateLimitedLocal(ip)
+  }
 }
 
 export async function POST(request) {
@@ -70,7 +126,7 @@ export async function POST(request) {
   }
 
   const clientIp = getClientIp(request)
-  if (isRateLimited(clientIp)) {
+  if (await isRateLimited(clientIp)) {
     return NextResponse.json({ message: 'Zu viele Anfragen. Bitte spaeter erneut versuchen.' }, { status: 429 })
   }
 
