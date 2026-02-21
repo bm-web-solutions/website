@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { BRAND } from '../../../lib/config'
+import { SITE_URL } from '../../../lib/site'
 
 const CONTACT_ENDPOINT = process.env.CONTACT_ENDPOINT ?? `https://formsubmit.co/ajax/${BRAND.email}`
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000
@@ -9,6 +10,7 @@ const RATE_LIMIT_REST_URL = process.env.KV_REST_API_URL ?? process.env.UPSTASH_R
 const RATE_LIMIT_REST_TOKEN = process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN
 const HAS_DISTRIBUTED_RATE_LIMIT = Boolean(RATE_LIMIT_REST_URL && RATE_LIMIT_REST_TOKEN)
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const FORM_URL = `${SITE_URL}/#kontakt`
 let hasLoggedRateLimitFallback = false
 
 function normalizeText(value, maxLength) {
@@ -72,8 +74,8 @@ async function runRateLimitPipeline(commands) {
   }
 
   const data = await response.json()
-  const results = data?.result
-  if (!Array.isArray(results)) {
+  const results = Array.isArray(data?.result) ? data.result : Array.isArray(data) ? data : null
+  if (!results) {
     throw new Error('Rate limit store returned an unexpected response shape.')
   }
 
@@ -148,6 +150,8 @@ export async function POST(request) {
     email,
     company,
     message,
+    _url: FORM_URL,
+    _captcha: 'false',
     _subject: `Neue Projektanfrage von ${name}`,
     _template: 'table',
   }
@@ -158,6 +162,8 @@ export async function POST(request) {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        Origin: SITE_URL,
+        Referer: FORM_URL,
       },
       body: JSON.stringify(payload),
       cache: 'no-store',
