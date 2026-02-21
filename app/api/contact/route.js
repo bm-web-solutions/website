@@ -2,25 +2,22 @@ import { NextResponse } from 'next/server'
 import { BRAND } from '../../../lib/config'
 import { SITE_URL } from '../../../lib/site'
 
-const CONTACT_ENDPOINT = (process.env.CONTACT_ENDPOINT ?? `https://formsubmit.co/ajax/${BRAND.email}`).trim()
+export const runtime = 'nodejs'
+
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000
 const RATE_LIMIT_MAX_REQUESTS = 5
 const localRequestsByIp = new Map()
 const RATE_LIMIT_REST_URL = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL
 const RATE_LIMIT_REST_TOKEN = process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN
 const HAS_DISTRIBUTED_RATE_LIMIT = Boolean(RATE_LIMIT_REST_URL && RATE_LIMIT_REST_TOKEN)
+const RESEND_API_URL = 'https://api.resend.com/emails'
+const RESEND_API_KEY = (process.env.RESEND_API_KEY ?? '').trim()
+const CONTACT_TO_EMAIL = (process.env.CONTACT_TO_EMAIL ?? BRAND.email).trim()
+const CONTACT_FROM_EMAIL = (process.env.CONTACT_FROM_EMAIL ?? '').trim()
+const HAS_CONTACT_MAIL_CONFIG = Boolean(RESEND_API_KEY && CONTACT_TO_EMAIL && CONTACT_FROM_EMAIL)
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const FORM_URL = `${SITE_URL}/#kontakt`
 let hasLoggedRateLimitFallback = false
-
-function isLikelyValidContactEndpoint(value) {
-  try {
-    const url = new URL(value)
-    return url.protocol === 'https:' && url.hostname === 'formsubmit.co' && url.pathname.startsWith('/ajax/')
-  } catch {
-    return false
-  }
-}
 
 function normalizeText(value, maxLength) {
   if (typeof value !== 'string') {
@@ -28,6 +25,15 @@ function normalizeText(value, maxLength) {
   }
 
   return value.trim().replace(/\s+/g, ' ').slice(0, maxLength)
+}
+
+function escapeHtml(value) {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
 }
 
 function getClientIp(request) {
@@ -122,10 +128,87 @@ async function isRateLimited(ip) {
   }
 }
 
+function buildMailPayload({ name, email, company, message }) {
+  const normalizedCompany = company || 'Nicht angegeben'
+  const escapedName = escapeHtml(name)
+  const escapedEmail = escapeHtml(email)
+  const escapedCompany = escapeHtml(normalizedCompany)
+  const escapedMessage = escapeHtml(message).replaceAll('\n', '<br />')
+
+  return {
+    subject: `Neue Projektanfrage von ${name}`,
+    replyTo: email,
+    text: [
+      'Neue Kontaktanfrage ueber die Website',
+      '',
+      `Name: ${name}`,
+      `E-Mail: ${email}`,
+      `Firma: ${normalizedCompany}`,
+      '',
+      'Nachricht:',
+      message,
+      '',
+      `Quelle: ${FORM_URL}`,
+    ].join('\n'),
+    html: [
+      '<h2>Neue Kontaktanfrage ueber die Website</h2>',
+      '<p>',
+      `<strong>Name:</strong> ${escapedName}<br />`,
+      `<strong>E-Mail:</strong> ${escapedEmail}<br />`,
+      `<strong>Firma:</strong> ${escapedCompany}`,
+      '</p>',
+      '<p><strong>Nachricht:</strong><br />',
+      `${escapedMessage}</p>`,
+      `<p><strong>Quelle:</strong> ${FORM_URL}</p>`,
+    ].join(''),
+  }
+}
+
+async function sendContactMail(mailPayload) {
+  const response = await fetch(RESEND_API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${RESEND_API_KEY}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: CONTACT_FROM_EMAIL,
+      to: [CONTACT_TO_EMAIL],
+      reply_to: mailPayload.replyTo,
+      subject: mailPayload.subject,
+      text: mailPayload.text,
+      html: mailPayload.html,
+    }),
+    cache: 'no-store',
+  })
+
+  if (!response.ok) {
+    const errorBody = await response.text()
+    console.error('Resend request failed:', {
+      status: response.status,
+      body: errorBody,
+    })
+    return false
+  }
+
+  const data = await response.json().catch(() => null)
+  if (!data?.id) {
+    console.error('Resend request succeeded but response did not contain an id:', { body: data })
+    return false
+  }
+
+  return true
+}
+
 export async function POST(request) {
-  if (!isLikelyValidContactEndpoint(CONTACT_ENDPOINT)) {
-    console.error('Invalid CONTACT_ENDPOINT configured:', CONTACT_ENDPOINT)
-    return NextResponse.json({ message: 'Kontakt-Endpunkt ist serverseitig falsch konfiguriert.' }, { status: 500 })
+  if (!HAS_CONTACT_MAIL_CONFIG) {
+    console.error('Missing contact mail configuration:', {
+      hasResendApiKey: Boolean(RESEND_API_KEY),
+      hasContactToEmail: Boolean(CONTACT_TO_EMAIL),
+      hasContactFromEmail: Boolean(CONTACT_FROM_EMAIL),
+    })
+    return NextResponse.json({ message: 'Kontaktformular ist serverseitig nicht vollstaendig konfiguriert.' }, { status: 500 })
   }
 
   let body
@@ -159,54 +242,16 @@ export async function POST(request) {
     return NextResponse.json({ message: 'Bitte eine gueltige E-Mail-Adresse angeben.' }, { status: 400 })
   }
 
-  const payload = {
-    name,
-    email,
-    company,
-    message,
-    _url: FORM_URL,
-    _captcha: 'false',
-    _subject: `Neue Projektanfrage von ${name}`,
-    _template: 'table',
-  }
-
   try {
-    const response = await fetch(CONTACT_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Origin: SITE_URL,
-        Referer: FORM_URL,
-      },
-      body: JSON.stringify(payload),
-      cache: 'no-store',
+    const mailPayload = buildMailPayload({
+      name,
+      email,
+      company,
+      message,
     })
+    const sent = await sendContactMail(mailPayload)
 
-    if (!response.ok) {
-      const upstreamText = await response.text()
-      console.error('Contact upstream returned non-2xx:', {
-        status: response.status,
-        endpoint: CONTACT_ENDPOINT,
-        body: upstreamText,
-      })
-      return NextResponse.json({ message: 'Senden fehlgeschlagen. Bitte erneut versuchen.' }, { status: 502 })
-    }
-
-    const maybeJson = await response
-      .clone()
-      .json()
-      .catch(() => null)
-
-    if (
-      maybeJson &&
-      Object.prototype.hasOwnProperty.call(maybeJson, 'success') &&
-      String(maybeJson.success).toLowerCase() !== 'true'
-    ) {
-      console.error('Contact upstream returned success=false:', {
-        endpoint: CONTACT_ENDPOINT,
-        body: maybeJson,
-      })
+    if (!sent) {
       return NextResponse.json({ message: 'Senden fehlgeschlagen. Bitte erneut versuchen.' }, { status: 502 })
     }
 
@@ -215,7 +260,7 @@ export async function POST(request) {
       { status: 200 },
     )
   } catch (error) {
-    console.error('Contact forwarding failed:', { endpoint: CONTACT_ENDPOINT, error })
+    console.error('Contact mail send failed:', { error })
     return NextResponse.json(
       { message: `Senden fehlgeschlagen. Bitte erneut versuchen oder direkt an ${BRAND.email} schreiben.` },
       { status: 502 },
