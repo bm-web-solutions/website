@@ -13,10 +13,13 @@ dist-ssr
 *.local
 .bun
 .next
+out
+*.tsbuildinfo
 .tmp
 .env*
 !.env.example
 coverage
+.vercel
 
 # Editor directories and files
 .vscode/*
@@ -28,3 +31,6 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+
+# Local AI/agent tooling state
+.claude/settings.local.json
