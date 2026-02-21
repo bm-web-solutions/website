@@ -53,12 +53,12 @@
 
   [data-theme="dark"] {
     color-scheme: dark;
-    --color-cream: #0F1418;
-    --color-cream-mid: #141B20;
-    --color-cream-deep: #1A2329;
-    --color-ink: #E8EEE7;
-    --color-ink-mid: #D2DBD1;
-    --color-ink-deep: #BDC9BC;
+    --color-cream: #14110F;
+    --color-cream-mid: #1A1613;
+    --color-cream-deep: #221C18;
+    --color-ink: #F3EEE7;
+    --color-ink-mid: #E4DCCF;
+    --color-ink-deep: #D2C7B8;
     --color-primary: #D7A06E;
     --color-primary-light: #E3B184;
     --color-primary-lighter: #F0C8A4;
@@ -85,6 +85,18 @@
   ::selection {
     background: color-mix(in oklab, var(--color-primary) 32%, transparent);
     color: var(--color-ink);
+  }
+
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition:
+      background-color 350ms ease,
+      color 350ms ease,
+      border-color 350ms ease,
+      box-shadow 350ms ease,
+      fill 350ms ease,
+      stroke 350ms ease;
   }
 }
 

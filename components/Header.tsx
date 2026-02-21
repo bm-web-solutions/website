@@ -8,7 +8,6 @@ const NAV_LINKS = [
   { label: 'Prozess', id: 'prozess' },
   { label: 'Ansatz', id: 'ansatz' },
   { label: 'Team', id: 'team' },
-  { label: 'Kontakt', id: 'kontakt' },
 ] as const
 
 export default function Header() {
@@ -52,19 +51,16 @@ export default function Header() {
               {link.label}
             </a>
           ))}
-          <ThemeToggle />
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="md:hidden">
-            <ThemeToggle />
-          </div>
+        <div className="flex items-center gap-4">
           <a
             href="#kontakt"
-            className="px-5 py-2 bg-night text-night-text rounded-full text-xs tracking-wider hover:bg-primary transition-colors duration-300"
+            className="text-xs tracking-[0.15em] uppercase text-ink/55 hover:text-primary transition-colors"
           >
-            Projekt starten
+            Kontakt
           </a>
+          <ThemeToggle />
         </div>
       </div>
     </nav>
