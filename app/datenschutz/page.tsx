@@ -5,6 +5,9 @@ import { BRAND } from '../../lib/config'
 export const metadata: Metadata = {
   title: 'Datenschutz',
   description: `Datenschutzerklärung von ${BRAND.name}`,
+  alternates: {
+    canonical: '/datenschutz',
+  },
 }
 
 export default function DatenschutzPage() {

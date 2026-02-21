@@ -7,6 +7,8 @@ export const runtime = 'nodejs'
 
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000
 const RATE_LIMIT_MAX_REQUESTS = 5
+const RATE_LIMIT_TIMEOUT_MS = 2_000
+const RESEND_TIMEOUT_MS = 10_000
 
 type RateLimitEntry = {
   count: number
@@ -42,6 +44,24 @@ type MailPayload = {
 }
 
 type PipelineCommand = [string, ...Array<string | number>]
+
+async function fetchWithTimeout(
+  input: string,
+  init: RequestInit,
+  timeoutMs: number,
+): Promise<Response> {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+
+  try {
+    return await fetch(input, {
+      ...init,
+      signal: controller.signal,
+    })
+  } finally {
+    clearTimeout(timeoutId)
+  }
+}
 
 function normalizeText(value: unknown, maxLength: number): string {
   if (typeof value !== 'string') {
@@ -102,15 +122,19 @@ async function runRateLimitPipeline(commands: PipelineCommand[]): Promise<unknow
     throw new Error('Rate limit store is not configured.')
   }
 
-  const response = await fetch(`${RATE_LIMIT_REST_URL}/pipeline`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${RATE_LIMIT_REST_TOKEN}`,
-      'Content-Type': 'application/json',
+  const response = await fetchWithTimeout(
+    `${RATE_LIMIT_REST_URL}/pipeline`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${RATE_LIMIT_REST_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(commands),
+      cache: 'no-store',
     },
-    body: JSON.stringify(commands),
-    cache: 'no-store',
-  })
+    RATE_LIMIT_TIMEOUT_MS,
+  )
 
   if (!response.ok) {
     throw new Error(`Rate limit store request failed with status ${response.status}`)
@@ -146,7 +170,12 @@ async function isRateLimitedDistributed(ip: string): Promise<boolean> {
     ['EXPIRE', key, windowSeconds, 'NX'],
   ])
 
-  return Number(count) > RATE_LIMIT_MAX_REQUESTS
+  const parsedCount = Number(count)
+  if (!Number.isFinite(parsedCount)) {
+    throw new Error('Rate limit store returned a non-numeric request count.')
+  }
+
+  return parsedCount > RATE_LIMIT_MAX_REQUESTS
 }
 
 async function isRateLimited(ip: string): Promise<boolean> {
@@ -215,23 +244,27 @@ function buildMailPayload({
 }
 
 async function sendContactMail(mailPayload: MailPayload): Promise<boolean> {
-  const response = await fetch(RESEND_API_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${RESEND_API_KEY}`,
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
+  const response = await fetchWithTimeout(
+    RESEND_API_URL,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: CONTACT_FROM_EMAIL,
+        to: [CONTACT_TO_EMAIL],
+        reply_to: mailPayload.replyTo,
+        subject: mailPayload.subject,
+        text: mailPayload.text,
+        html: mailPayload.html,
+      }),
+      cache: 'no-store',
     },
-    body: JSON.stringify({
-      from: CONTACT_FROM_EMAIL,
-      to: [CONTACT_TO_EMAIL],
-      reply_to: mailPayload.replyTo,
-      subject: mailPayload.subject,
-      text: mailPayload.text,
-      html: mailPayload.html,
-    }),
-    cache: 'no-store',
-  })
+    RESEND_TIMEOUT_MS,
+  )
 
   if (!response.ok) {
     const errorBody = await response.text()

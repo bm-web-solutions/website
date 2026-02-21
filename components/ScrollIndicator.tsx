@@ -39,7 +39,7 @@ export default function ScrollIndicator() {
   return (
     <div
       aria-hidden="true"
-      className={`absolute bottom-10 left-1/2 -translate-x-1/2 pointer-events-none transition-[opacity,transform] duration-1000 ${
+      className={`absolute bottom-10 left-1/2 -translate-x-1/2 pointer-events-none transition-[opacity,translate] duration-1000 ${
         visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
       }`}
     >

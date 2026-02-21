@@ -133,7 +133,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={submitState.status === 'submitting'}
-        className="group inline-flex items-center justify-center gap-3 bg-gradient-to-r from-primary to-primary-light text-white px-8 py-4 rounded-xl text-sm font-medium hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 transition-[transform,box-shadow,opacity] duration-300 mt-2"
+        className="group inline-flex items-center justify-center gap-3 bg-gradient-to-r from-primary to-primary-light text-white px-8 py-4 rounded-xl text-sm font-medium hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 transition-[translate,box-shadow,opacity] duration-300 mt-2"
       >
         {submitState.status === 'submitting' ? 'Wird gesendet...' : 'Nachricht senden'}
         <Send className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

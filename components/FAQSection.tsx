@@ -81,15 +81,10 @@ export default function FAQSection() {
                   id={panelId}
                   role="region"
                   aria-labelledby={buttonId}
-                  style={{
-                    display: 'grid',
-                    gridTemplateRows: openIndex === index ? '1fr' : '0fr',
-                    transition: 'grid-template-rows 0.3s ease',
-                  }}
+                  hidden={openIndex !== index}
+                  className="overflow-hidden"
                 >
-                  <div style={{ overflow: 'hidden' }}>
-                    <p className="pb-6 text-ink/65 leading-relaxed">{faq.a}</p>
-                  </div>
+                  <p className="pb-6 text-ink/65 leading-relaxed">{faq.a}</p>
                 </div>
               </div>
             )

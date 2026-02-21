@@ -120,7 +120,7 @@ export default function LandingPage() {
           >
             <a
               href="#kontakt"
-              className="group inline-flex items-center justify-center gap-3 bg-ink text-cream px-8 py-4 rounded-2xl text-sm font-medium hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-0.5 transition-[transform,box-shadow] duration-300"
+              className="group inline-flex items-center justify-center gap-3 bg-ink text-cream px-8 py-4 rounded-2xl text-sm font-medium hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-0.5 transition-[translate,box-shadow] duration-300"
             >
               Projekt anfragen
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
@@ -155,7 +155,7 @@ export default function LandingPage() {
               return (
                 <div
                   key={item.headline}
-                  className="group bg-white/50 backdrop-blur-sm border border-ink/8 rounded-2xl p-7 md:p-8 hover:bg-white/75 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-[background-color,box-shadow,transform] duration-500"
+                  className="group bg-white/50 backdrop-blur-sm border border-ink/8 rounded-2xl p-7 md:p-8 hover:bg-white/75 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-[background-color,box-shadow,translate] duration-500"
                 >
                   <Icon
                     className="w-6 h-6 text-primary mb-5 group-hover:scale-110 transition-transform duration-300"
@@ -238,7 +238,7 @@ export default function LandingPage() {
             {approachCards.map((card, index) => (
               <article
                 key={card.title}
-                className="group relative bg-white/40 backdrop-blur-sm border border-ink/8 rounded-2xl p-7 md:p-8 hover:bg-white/65 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-0.5 transition-[background-color,box-shadow,transform] duration-500 overflow-hidden"
+                className="group relative bg-white/40 backdrop-blur-sm border border-ink/8 rounded-2xl p-7 md:p-8 hover:bg-white/65 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-0.5 transition-[background-color,box-shadow,translate] duration-500 overflow-hidden"
               >
                 <span
                   aria-hidden="true"
@@ -273,7 +273,7 @@ export default function LandingPage() {
               return (
                 <div
                   key={person.name}
-                  className="group bg-white/40 backdrop-blur-sm border border-ink/8 rounded-3xl p-8 hover:bg-white/60 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1 transition-[background-color,box-shadow,transform] duration-500"
+                  className="group bg-white/40 backdrop-blur-sm border border-ink/8 rounded-3xl p-8 hover:bg-white/60 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1 transition-[background-color,box-shadow,translate] duration-500"
                 >
                   <div className="flex items-start justify-between mb-7">
                     <div

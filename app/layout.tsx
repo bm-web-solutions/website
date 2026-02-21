@@ -24,9 +24,6 @@ export const metadata: Metadata = {
     'B2B Landingpage',
     'Landingpage Agentur Deutschland',
   ],
-  alternates: {
-    canonical: '/',
-  },
   openGraph: {
     title: `${BRAND.name} | Landingpages & Webentwicklung`,
     description:
