@@ -1,12 +1,26 @@
 'use client'
 
 import { Send } from 'lucide-react'
-import { useState } from 'react'
+import { type FormEvent, useState } from 'react'
+
+type SubmitState = {
+  status: 'idle' | 'submitting' | 'success' | 'error'
+  message: string
+}
+
+type ContactApiResponse = {
+  message?: string
+}
+
+function getStringFormValue(formData: FormData, key: string): string {
+  const value = formData.get(key)
+  return typeof value === 'string' ? value : ''
+}
 
 export default function ContactForm() {
-  const [submitState, setSubmitState] = useState({ status: 'idle', message: '' })
+  const [submitState, setSubmitState] = useState<SubmitState>({ status: 'idle', message: '' })
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const form = event.currentTarget
     const formData = new FormData(form)
@@ -15,11 +29,11 @@ export default function ContactForm() {
 
     try {
       const payload = {
-        name: formData.get('name'),
-        email: formData.get('email'),
-        company: formData.get('company'),
-        message: formData.get('message'),
-        _honey: formData.get('_honey'),
+        name: getStringFormValue(formData, 'name'),
+        email: getStringFormValue(formData, 'email'),
+        company: getStringFormValue(formData, 'company'),
+        message: getStringFormValue(formData, 'message'),
+        _honey: getStringFormValue(formData, '_honey'),
       }
 
       const response = await fetch('/api/contact', {
@@ -30,7 +44,7 @@ export default function ContactForm() {
         body: JSON.stringify(payload),
       })
 
-      const data = await response.json()
+      const data = (await response.json().catch(() => ({}))) as ContactApiResponse
 
       if (!response.ok) {
         throw new Error(data.message || 'Senden fehlgeschlagen.')
@@ -119,7 +133,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={submitState.status === 'submitting'}
-        className="group inline-flex items-center justify-center gap-3 bg-gradient-to-r from-primary to-primary-light text-white px-8 py-4 rounded-xl text-sm font-medium hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 transition-[transform,box-shadow,opacity] duration-300 mt-2"
+        className="group inline-flex items-center justify-center gap-3 bg-gradient-to-r from-primary to-primary-light text-white px-8 py-4 rounded-xl text-sm font-medium hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 transition-[translate,box-shadow,opacity] duration-300 mt-2"
       >
         {submitState.status === 'submitting' ? 'Wird gesendet...' : 'Nachricht senden'}
         <Send className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

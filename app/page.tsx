@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { BRAND } from '../lib/config'
 import LandingPage from '../components/LandingPage'
 import { SITE_URL } from '../lib/site'
@@ -93,11 +94,21 @@ const faqJsonLd = {
   ],
 }
 
+export const metadata: Metadata = {
+  alternates: {
+    canonical: '/',
+  },
+}
+
+function serializeJsonLd(data: object): string {
+  return JSON.stringify(data).replace(/</g, '\\u003c')
+}
+
 export default function HomePage() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqJsonLd) }} />
       <main id="main-content">
         <LandingPage />
       </main>

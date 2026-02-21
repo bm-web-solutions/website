@@ -4,19 +4,23 @@ import { useEffect, useRef, useState } from 'react'
 
 export default function ScrollIndicator() {
   const [visible, setVisible] = useState(false)
-  const timerRef = useRef(null)
+  const timerRef = useRef<number | undefined>(undefined)
 
   useEffect(() => {
     const schedule = () => {
-      clearTimeout(timerRef.current)
+      if (timerRef.current !== undefined) {
+        clearTimeout(timerRef.current)
+      }
       setVisible(false)
-      timerRef.current = setTimeout(() => setVisible(true), 3000)
+      timerRef.current = window.setTimeout(() => setVisible(true), 3000)
     }
 
     const onScroll = () => {
       if (window.scrollY > 80) {
         setVisible(false)
-        clearTimeout(timerRef.current)
+        if (timerRef.current !== undefined) {
+          clearTimeout(timerRef.current)
+        }
       } else if (window.scrollY < 20) {
         schedule()
       }
@@ -25,7 +29,9 @@ export default function ScrollIndicator() {
     schedule()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => {
-      clearTimeout(timerRef.current)
+      if (timerRef.current !== undefined) {
+        clearTimeout(timerRef.current)
+      }
       window.removeEventListener('scroll', onScroll)
     }
   }, [])
@@ -33,7 +39,7 @@ export default function ScrollIndicator() {
   return (
     <div
       aria-hidden="true"
-      className={`absolute bottom-10 left-1/2 -translate-x-1/2 pointer-events-none transition-[opacity,transform] duration-1000 ${
+      className={`absolute bottom-10 left-1/2 -translate-x-1/2 pointer-events-none transition-[opacity,translate] duration-1000 ${
         visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
       }`}
     >

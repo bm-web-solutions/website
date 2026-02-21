@@ -21,6 +21,7 @@ bun run dev
 
 ```bash
 bun run lint
+bun run typecheck
 bun run build
 bun run start
 ```
@@ -28,20 +29,21 @@ bun run start
 ## Quality Gates
 
 - `bun run lint` mit Next Core Web Vitals Regeln
+- `bun run typecheck` mit strict TypeScript
 - CI Workflow in `.github/workflows/ci.yml` (Lint + Build)
 - automatisierte Dependency-Updates via `.github/dependabot.yml`
 
-## Audit-Notiz
+## Tooling-Notiz
 
-- Aktuell sind 2 transitive Dev-Tooling Findings aus `bun audit` offen (`minimatch`, `ajv`) ueber die ESLint/Next-Lint-Chain.
-- `eslint@10` ist in diesem Setup derzeit nicht lauffaehig (`scopeManager.addGlobals` Fehler), lint ist deshalb aktuell kein harter Gate bis die Toolchain wieder stabil ist.
+- `eslint@10` ist mit der aktuellen Next-Toolchain noch nicht stabil. Das Projekt ist deshalb auf `eslint@9.39.3` gepinnt.
+- Dependabot ignoriert fuer `eslint` nur Major-Updates, damit keine unbrauchbaren Upgrade-PRs entstehen.
 
 ## SEO-Grundgeruest
 
-- zentrale Metadata in `app/layout.jsx`
-- strukturierte Daten (JSON-LD) in `app/page.jsx`
-- `app/robots.js`
-- `app/sitemap.js`
+- zentrale Metadata in `app/layout.tsx`
+- strukturierte Daten (JSON-LD) in `app/page.tsx`
+- `app/robots.ts`
+- `app/sitemap.ts`
 
 ## Environment
 
