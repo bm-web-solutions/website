@@ -1,21 +1,8 @@
 import './globals.css'
-import { Instrument_Serif, Manrope } from 'next/font/google'
 import { BRAND } from '../lib/config'
 import { SITE_URL } from '../lib/site'
 
-const manrope = Manrope({
-  display: 'swap',
-  subsets: ['latin'],
-  variable: '--font-sans',
-})
-
-const instrumentSerif = Instrument_Serif({
-  display: 'swap',
-  style: ['normal', 'italic'],
-  subsets: ['latin'],
-  variable: '--font-display',
-  weight: '400',
-})
+const isPreview = process.env.VERCEL_ENV === 'preview'
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -62,11 +49,11 @@ export const metadata = {
     images: ['/api/og'],
   },
   robots: {
-    index: true,
-    follow: true,
+    index: !isPreview,
+    follow: !isPreview,
     googleBot: {
-      index: true,
-      follow: true,
+      index: !isPreview,
+      follow: !isPreview,
       'max-snippet': -1,
       'max-image-preview': 'large',
     },
@@ -76,7 +63,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="de">
-      <body className={`${manrope.variable} ${instrumentSerif.variable} antialiased`}>
+      <body className="antialiased">
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-cream focus:px-4 focus:py-2 focus:rounded-md focus:text-ink">
           Zum Inhalt springen
         </a>

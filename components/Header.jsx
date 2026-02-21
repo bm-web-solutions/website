@@ -16,7 +16,7 @@ export default function Header() {
   return (
     <nav
       aria-label="Hauptnavigation"
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-500 ${
         scrolled ? 'backdrop-blur-md bg-cream/92 shadow-[0_1px_0_0_rgba(45,42,38,0.1)]' : ''
       }`}
     >

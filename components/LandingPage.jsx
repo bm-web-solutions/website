@@ -1,4 +1,5 @@
 import { ArrowRight, BarChart3, Github, Layers, Linkedin, Mail, MapPin, Palette, Sparkles, Target, Users, Zap } from 'lucide-react'
+import Link from 'next/link'
 import { BRAND, TEAM } from '../lib/config'
 import ContactForm from './ContactForm'
 import FAQSection from './FAQSection'
@@ -119,14 +120,14 @@ export default function LandingPage() {
           >
             <a
               href="#kontakt"
-              className="group inline-flex items-center justify-center gap-3 bg-ink text-cream px-8 py-4 rounded-2xl text-sm font-medium hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-0.5 transition-all duration-300"
+              className="group inline-flex items-center justify-center gap-3 bg-ink text-cream px-8 py-4 rounded-2xl text-sm font-medium hover:shadow-2xl hover:shadow-primary/20 hover:-translate-y-0.5 transition-[transform,box-shadow] duration-300"
             >
               Projekt anfragen
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
             </a>
             <a
               href="#prozess"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-sm font-medium border border-ink/15 text-ink/70 hover:border-ink/35 hover:text-ink transition-all"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-sm font-medium border border-ink/15 text-ink/70 hover:border-ink/35 hover:text-ink transition-colors"
             >
               Unser Prozess
             </a>
@@ -154,7 +155,7 @@ export default function LandingPage() {
               return (
                 <div
                   key={item.headline}
-                  className="group bg-white/50 backdrop-blur-sm border border-ink/8 rounded-2xl p-7 md:p-8 hover:bg-white/75 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-all duration-500"
+                  className="group bg-white/50 backdrop-blur-sm border border-ink/8 rounded-2xl p-7 md:p-8 hover:bg-white/75 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 transition-[background-color,box-shadow,transform] duration-500"
                 >
                   <Icon
                     className="w-6 h-6 text-primary mb-5 group-hover:scale-110 transition-transform duration-300"
@@ -192,7 +193,7 @@ export default function LandingPage() {
                 return (
                   <div key={step.title} className="group flex items-start gap-6 md:gap-10 relative">
                     <div className="relative z-10 shrink-0">
-                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-cream border-2 border-primary/25 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all duration-500">
+                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-cream border-2 border-primary/25 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-colors duration-500">
                         <Icon className="w-5 h-5 md:w-6 md:h-6" aria-hidden="true" />
                       </div>
                     </div>
@@ -237,7 +238,7 @@ export default function LandingPage() {
             {approachCards.map((card, index) => (
               <article
                 key={card.title}
-                className="group relative bg-white/40 backdrop-blur-sm border border-ink/8 rounded-2xl p-7 md:p-8 hover:bg-white/65 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-0.5 transition-all duration-500 overflow-hidden"
+                className="group relative bg-white/40 backdrop-blur-sm border border-ink/8 rounded-2xl p-7 md:p-8 hover:bg-white/65 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-0.5 transition-[background-color,box-shadow,transform] duration-500 overflow-hidden"
               >
                 <span
                   aria-hidden="true"
@@ -272,7 +273,7 @@ export default function LandingPage() {
               return (
                 <div
                   key={person.name}
-                  className="group bg-white/40 backdrop-blur-sm border border-ink/8 rounded-3xl p-8 hover:bg-white/60 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-500"
+                  className="group bg-white/40 backdrop-blur-sm border border-ink/8 rounded-3xl p-8 hover:bg-white/60 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1 transition-[background-color,box-shadow,transform] duration-500"
                 >
                   <div className="flex items-start justify-between mb-7">
                     <div
@@ -288,7 +289,7 @@ export default function LandingPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={`${person.name} auf LinkedIn`}
-                          className="w-9 h-9 rounded-xl border border-ink/12 flex items-center justify-center text-ink/45 hover:text-primary hover:border-primary/30 transition-all duration-300"
+                          className="w-9 h-9 rounded-xl border border-ink/12 flex items-center justify-center text-ink/45 hover:text-primary hover:border-primary/30 transition-colors duration-300"
                         >
                           <Linkedin className="w-4 h-4" aria-hidden="true" />
                         </a>
@@ -299,7 +300,7 @@ export default function LandingPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={`${person.name} auf GitHub`}
-                          className="w-9 h-9 rounded-xl border border-ink/12 flex items-center justify-center text-ink/45 hover:text-primary hover:border-primary/30 transition-all duration-300"
+                          className="w-9 h-9 rounded-xl border border-ink/12 flex items-center justify-center text-ink/45 hover:text-primary hover:border-primary/30 transition-colors duration-300"
                         >
                           <Github className="w-4 h-4" aria-hidden="true" />
                         </a>
@@ -386,6 +387,12 @@ export default function LandingPage() {
                   <Github className="w-4 h-4" aria-hidden="true" />
                 </a>
               )}
+              <Link href="/impressum" className="hover:text-primary transition-colors">
+                Impressum
+              </Link>
+              <Link href="/datenschutz" className="hover:text-primary transition-colors">
+                Datenschutz
+              </Link>
               <span>Mit Sorgfalt gebaut in Deutschland</span>
             </div>
           </div>
