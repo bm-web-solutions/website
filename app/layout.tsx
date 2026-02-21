@@ -65,8 +65,21 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="de">
+    <html lang="de" suppressHydrationWarning>
       <body className="antialiased">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => {
+              try {
+                const key = 'bm-theme';
+                const stored = localStorage.getItem(key);
+                const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const theme = stored === 'dark' || stored === 'light' ? stored : (systemDark ? 'dark' : 'light');
+                document.documentElement.dataset.theme = theme;
+              } catch {}
+            })();`,
+          }}
+        />
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-cream focus:px-4 focus:py-2 focus:rounded-md focus:text-ink">
           Zum Inhalt springen
         </a>

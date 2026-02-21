@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
   --color-cream: #FFF8F0;
@@ -12,6 +13,10 @@
   --color-primary: #C17E4F;
   --color-primary-light: #D4956A;
   --color-primary-lighter: #E8A87C;
+  --color-night: #2D2A26;
+  --color-night-mid: #322F2B;
+  --color-night-deep: #3D3A36;
+  --color-night-text: #FFF8F0;
 
   --animate-fade-up: fadeUp 0.75s ease-out both;
   --animate-scroll-dot: scrollDot 1.6s ease-in-out infinite;
@@ -41,8 +46,22 @@
 
 @layer base {
   :root {
+    color-scheme: light;
     --font-sans: "Aptos", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark;
+    --color-cream: #0F1418;
+    --color-cream-mid: #141B20;
+    --color-cream-deep: #1A2329;
+    --color-ink: #E8EEE7;
+    --color-ink-mid: #D2DBD1;
+    --color-ink-deep: #BDC9BC;
+    --color-primary: #D7A06E;
+    --color-primary-light: #E3B184;
+    --color-primary-lighter: #F0C8A4;
   }
 
   html {
@@ -61,6 +80,11 @@
   :where(a, button, input, textarea, select):focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-primary) 32%, transparent);
+    color: var(--color-ink);
   }
 }
 
