@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { BRAND } from '../../../lib/config'
 import { SITE_URL } from '../../../lib/site'
 
-const CONTACT_ENDPOINT = process.env.CONTACT_ENDPOINT ?? `https://formsubmit.co/ajax/${BRAND.email}`
+const CONTACT_ENDPOINT = (process.env.CONTACT_ENDPOINT ?? `https://formsubmit.co/ajax/${BRAND.email}`).trim()
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000
 const RATE_LIMIT_MAX_REQUESTS = 5
 const localRequestsByIp = new Map()
@@ -12,6 +12,15 @@ const HAS_DISTRIBUTED_RATE_LIMIT = Boolean(RATE_LIMIT_REST_URL && RATE_LIMIT_RES
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const FORM_URL = `${SITE_URL}/#kontakt`
 let hasLoggedRateLimitFallback = false
+
+function isLikelyValidContactEndpoint(value) {
+  try {
+    const url = new URL(value)
+    return url.protocol === 'https:' && url.hostname === 'formsubmit.co' && url.pathname.startsWith('/ajax/')
+  } catch {
+    return false
+  }
+}
 
 function normalizeText(value, maxLength) {
   if (typeof value !== 'string') {
@@ -114,6 +123,11 @@ async function isRateLimited(ip) {
 }
 
 export async function POST(request) {
+  if (!isLikelyValidContactEndpoint(CONTACT_ENDPOINT)) {
+    console.error('Invalid CONTACT_ENDPOINT configured:', CONTACT_ENDPOINT)
+    return NextResponse.json({ message: 'Kontakt-Endpunkt ist serverseitig falsch konfiguriert.' }, { status: 500 })
+  }
+
   let body
 
   try {
@@ -170,6 +184,29 @@ export async function POST(request) {
     })
 
     if (!response.ok) {
+      const upstreamText = await response.text()
+      console.error('Contact upstream returned non-2xx:', {
+        status: response.status,
+        endpoint: CONTACT_ENDPOINT,
+        body: upstreamText,
+      })
+      return NextResponse.json({ message: 'Senden fehlgeschlagen. Bitte erneut versuchen.' }, { status: 502 })
+    }
+
+    const maybeJson = await response
+      .clone()
+      .json()
+      .catch(() => null)
+
+    if (
+      maybeJson &&
+      Object.prototype.hasOwnProperty.call(maybeJson, 'success') &&
+      String(maybeJson.success).toLowerCase() !== 'true'
+    ) {
+      console.error('Contact upstream returned success=false:', {
+        endpoint: CONTACT_ENDPOINT,
+        body: maybeJson,
+      })
       return NextResponse.json({ message: 'Senden fehlgeschlagen. Bitte erneut versuchen.' }, { status: 502 })
     }
 
@@ -177,7 +214,8 @@ export async function POST(request) {
       { ok: true, message: 'Danke! Ihre Anfrage wurde versendet. Wir melden uns zeitnah zurueck.' },
       { status: 200 },
     )
-  } catch {
+  } catch (error) {
+    console.error('Contact forwarding failed:', { endpoint: CONTACT_ENDPOINT, error })
     return NextResponse.json(
       { message: `Senden fehlgeschlagen. Bitte erneut versuchen oder direkt an ${BRAND.email} schreiben.` },
       { status: 502 },
