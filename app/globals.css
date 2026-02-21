@@ -62,6 +62,10 @@
     --color-primary: #D7A06E;
     --color-primary-light: #E3B184;
     --color-primary-lighter: #F0C8A4;
+    --color-night: #3A2F28;
+    --color-night-mid: #463931;
+    --color-night-deep: #514238;
+    --color-night-text: #F7EFE4;
   }
 
   html {
@@ -86,17 +90,13 @@
     background: color-mix(in oklab, var(--color-primary) 32%, transparent);
     color: var(--color-ink);
   }
+}
 
-  html.theme-transition *,
-  html.theme-transition *::before,
-  html.theme-transition *::after {
-    transition:
-      background-color 350ms ease,
-      color 350ms ease,
-      border-color 350ms ease,
-      box-shadow 350ms ease,
-      fill 350ms ease,
-      stroke 350ms ease;
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 260ms;
+    animation-timing-function: ease;
   }
 }
 

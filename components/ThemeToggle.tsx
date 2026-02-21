@@ -9,14 +9,30 @@ function getCurrentTheme(): 'light' | 'dark' {
   return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'
 }
 
+type ViewTransitionDoc = Document & {
+  startViewTransition?: (updateCallback: () => void) => void
+}
+
 export default function ThemeToggle() {
   const toggleTheme = () => {
-    const root = document.documentElement
     const nextTheme = getCurrentTheme() === 'dark' ? 'light' : 'dark'
-    root.classList.add('theme-transition')
-    root.dataset.theme = nextTheme
-    localStorage.setItem(THEME_STORAGE_KEY, nextTheme)
-    window.setTimeout(() => root.classList.remove('theme-transition'), 380)
+    const applyTheme = () => {
+      document.documentElement.dataset.theme = nextTheme
+      localStorage.setItem(THEME_STORAGE_KEY, nextTheme)
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      applyTheme()
+      return
+    }
+
+    const doc = document as ViewTransitionDoc
+    if (typeof doc.startViewTransition === 'function') {
+      doc.startViewTransition(() => applyTheme())
+      return
+    }
+
+    applyTheme()
   }
 
   return (

@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { label: 'Prozess', id: 'prozess' },
   { label: 'Ansatz', id: 'ansatz' },
   { label: 'Team', id: 'team' },
+  { label: 'Kontakt', id: 'kontakt' },
 ] as const
 
 export default function Header() {
@@ -56,7 +57,7 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <a
             href="#kontakt"
-            className="text-xs tracking-[0.15em] uppercase text-ink/55 hover:text-primary transition-colors"
+            className="md:hidden text-xs tracking-[0.15em] uppercase text-ink/55 hover:text-primary transition-colors"
           >
             Kontakt
           </a>
